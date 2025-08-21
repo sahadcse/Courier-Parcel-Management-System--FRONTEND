@@ -3,14 +3,21 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
+    "dev:turbo": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint src/**/*.{ts,tsx} --fix",
+    "format": "prettier --write 'src/**/*.{ts,tsx}'",
+    "test": "jest --coverage"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2",
+    "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/typography": "^0.5.16",
+    "@testing-library/react": "^16.3.0",
     "axios": "^1.11.0",
+    "jest": "^30.0.5",
     "next": "15.4.7",
     "react": "19.1.0",
     "react-dom": "19.1.0",
@@ -20,14 +27,26 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^6.7.0",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.21",
     "eslint": "^9",
-    "eslint-config-next": "15.4.7",
+    "eslint-config-next": "^15.4.7",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "identity-obj-proxy": "^3.0.0",
+    "jest-environment-jsdom": "^30.0.5",
     "postcss": "^8.5.6",
+    "prettier": "^3.6.2",
     "tailwindcss": "^4.1.12",
+    "ts-jest": "^29.4.1",
     "typescript": "^5"
-  }
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT"
 }
