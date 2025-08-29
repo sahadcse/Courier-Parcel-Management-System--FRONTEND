@@ -1,0 +1,26 @@
+[
+  {
+    "id": "pp1",
+    "name": "Gulshan Hub",
+    "address": "House 1, Road 2, Gulshan 1, Dhaka",
+    "coordinates": { "lat": 23.780887, "lng": 90.417239 }
+  },
+  {
+    "id": "pp2",
+    "name": "Dhanmondi Branch",
+    "address": "Road 32, Dhanmondi, Dhaka",
+    "coordinates": { "lat": 23.746466, "lng": 90.376015 }
+  },
+  {
+    "id": "pp3",
+    "name": "Motijheel Office",
+    "address": "Shapla Chattar, Motijheel, Dhaka",
+    "coordinates": { "lat": 23.723434, "lng": 90.420418 }
+  },
+  {
+    "id": "pp4",
+    "name": "Uttara Collection Point",
+    "address": "Sector 11, Road 10, Uttara, Dhaka",
+    "coordinates": { "lat": 23.872857, "lng": 90.398418 }
+  }
+]

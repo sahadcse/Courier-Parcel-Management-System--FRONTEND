@@ -1,0 +1,26 @@
+{
+  "dashboard_title": "Dashboard",
+  "welcome_message": "Welcome, {{name}}!",
+
+  "agent":"Menu",
+  "agent_inactive_title": "Account Inactive",
+  "agent_inactive_message": "Your account is currently pending approval or has been deactivated by an administrator.",
+  "agent_menu_1": "Active Deliveries",
+  "route_view": "Route View",
+  "delivery_history": "Delivery History",
+  "profile": "Profile",
+
+  "agent--activeDelivery": "Page",
+  "loading_assigned_parcels": "Loading assigned parcels...",
+  "active_deliveries": "Active Deliveries",
+  "scan_parcel": "Scan Parcel",
+  "view_optimized_route": "View Optimized Route",
+  "location_access_required": "Location Access Required for Live Tracking",
+  "enable": "Enable",
+  "currently_tracking": "Currently Tracking: {{parcelId}} - Your location is being sent for live updates.",
+  "invoice": "Invoice",
+  "live_tracking": "📍 Live Tracking",
+  "view_details": "View Details",
+  "update": "Update",
+  "no_active_deliveries": "No active deliveries at the moment."
+}

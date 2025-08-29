@@ -1,9 +1,11 @@
 // src/app/layout.tsx
 import './globals.css';
+import 'leaflet/dist/leaflet.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import ClientThemeProvider from '@/components/ClientThemeProvider';
 import ReduxProvider from '@/components/ReduxProvider';
+import I18nProvider from '@/components/I18nProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -14,15 +16,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning={true}>
       <body className={inter.className}>
+        <I18nProvider>
         {/* ReduxProvider creates the client-side boundary for Redux store */}
         <ReduxProvider>
           {/* ClientThemeProvider needs to be within the ReduxProvider to access the store state */}
-          <ClientThemeProvider>
-            {children} {/* Your page content will be rendered here */}
-          </ClientThemeProvider>
+            <ClientThemeProvider>
+              {children} {/* Your page content will be rendered here */}
+            </ClientThemeProvider>
         </ReduxProvider>
+        </I18nProvider>
       </body>
     </html>
   );
