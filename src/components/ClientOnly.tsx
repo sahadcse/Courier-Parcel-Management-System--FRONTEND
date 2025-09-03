@@ -1,5 +1,7 @@
 'use client';
 
+import '@/lib/axios';
+
 import { useState, useEffect } from 'react';
 
 // This component will only render its children on the client side

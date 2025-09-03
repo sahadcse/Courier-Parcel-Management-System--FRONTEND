@@ -1,5 +1,5 @@
 // src/lib/authApi.ts
-import api from './axios';
+import api from './api';
 import { LoginInput, RegisterInput, RegisterAdminInput  } from '@/types'; // We'll define these types next
 
 export const loginUser = async (credentials: LoginInput) => {

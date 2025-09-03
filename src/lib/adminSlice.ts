@@ -1,6 +1,6 @@
 // src/lib/adminSlice.ts
+import api from './api';
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import api from './axios';
 import { isApiError, AnalyticsData } from '@/types';
 import { fetchAllUsers as fetchAllUsersApi } from './adminApi';
 
@@ -32,8 +32,7 @@ export const fetchAnalyticsData = createAsyncThunk(
   'admin/fetchAnalytics',
   async (_, { rejectWithValue }) => {
     try {
-      // Assuming your api instance is in a separate file
-      const response = await import('@/lib/axios').then(mod => mod.default.get('/admin/analytics'));
+      const response = await import('@/lib/api').then(mod => mod.default.get('/admin/analytics'));
       return response.data.data;
     } catch (error: unknown) {
       if (isApiError(error)) return rejectWithValue(error.response?.data?.message);

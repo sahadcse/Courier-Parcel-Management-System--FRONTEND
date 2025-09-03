@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import api from './axios';
+import api from './api';
 import { isApiError, PublicTrackingInfo } from '@/types';
 
 interface SingleTrackState {

@@ -1,4 +1,5 @@
 // src/lib/store.ts
+
 import { configureStore } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
 import authReducer from './authSlice';
@@ -7,6 +8,7 @@ import parcelReducer from './parcelSlice';
 import adminReducer from './adminSlice';
 import trackingReducer from './trackingSlice';
 import singleTrackReducer from './singleTrackSlice';
+import toastSlice from './toastSlice';
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +18,7 @@ export const store = configureStore({
     parcels: parcelReducer,
     admin: adminReducer,
     singleTrack: singleTrackReducer,
+    toast: toastSlice,
   },
 });
 

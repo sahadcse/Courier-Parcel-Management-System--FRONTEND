@@ -1,7 +1,10 @@
+// components/agent/QRScanner.tsx
+
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { Html5Qrcode } from 'html5-qrcode';
+import { Html5QrcodeScanner } from 'html5-qrcode';
+import type { Html5QrcodeResult } from 'html5-qrcode/esm/core';
 
 interface QRScannerProps {
   onScanSuccess: (decodedText: string) => void;
@@ -9,52 +12,73 @@ interface QRScannerProps {
 }
 
 export default function QRScanner({ onScanSuccess, onClose }: QRScannerProps) {
+  // Use a ref to hold the scanner instance to ensure we are always
+  // interacting with the same object.
+  const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+
+  const isInitializedRef = useRef(false);
+
+  // Use refs to hold the latest callback props. This allows our useEffect
+  // to have an empty dependency array but still call the latest functions.
   const onScanSuccessRef = useRef(onScanSuccess);
   onScanSuccessRef.current = onScanSuccess;
 
-  const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
-  const isRunningRef = useRef(false);
-
   useEffect(() => {
-    html5QrCodeRef.current = new Html5Qrcode("qr-reader");
 
-    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+    if (isInitializedRef.current) return;
+    isInitializedRef.current = true;
 
-    const startScan = async () => {
-      try {
-        if (html5QrCodeRef.current) {
-          await html5QrCodeRef.current.start(
-            { facingMode: "environment" }, // Prefers back camera; adjust if needed
-            config,
-            (decodedText) => {
-              onScanSuccessRef.current(decodedText);
-            },
-            (errorMessage) => {
-              // Ignore scan errors (scanner will retry)
-            }
-          );
-          isRunningRef.current = true;
-        }
-      } catch (err) {
-        console.error("Failed to start QR scanner:", err);
+    // Initialize the scanner only if it doesn't exist yet.
+    if (!scannerRef.current) {
+      scannerRef.current = new Html5QrcodeScanner(
+        "qr-reader",
+        {
+          fps: 10,
+          qrbox: { width: 250, height: 250 },
+        },
+        /* verbose= */ false
+      );
+    }
+
+    const scanner = scannerRef.current;
+
+    const handleSuccess = (decodedText: string, decodedResult: Html5QrcodeResult) => {
+      console.log(`QR Code detected: ${decodedText}`, decodedResult);
+      // Use the ref to ensure the latest callback is called.
+      onScanSuccessRef.current(decodedText);
+      // Optionally, you can stop scanning after a successful scan.
+      if (scannerRef.current) {
+        scanner.clear().catch(error => {
+          console.error("Failed to clear html5QrcodeScanner.", error);
+        });
       }
     };
 
-    startScan();
+    const handleError = (error: unknown) => {
+      // We can ignore scan errors.
+      // console.warn("QR Scan Error:", error);
+    };
 
+    // Start the scanner using the render method.
+    // Add a check to ensure the DOM element exists before rendering
+    const qrReaderElement = document.getElementById("qr-reader");
+    if (qrReaderElement && scannerRef.current) {
+      scanner.render(handleSuccess, handleError);
+    }
+
+    // This cleanup function will be called when the component unmounts.
     return () => {
-      if (isRunningRef.current && html5QrCodeRef.current) {
-        html5QrCodeRef.current
-          .stop()
-          .then(() => {
-            isRunningRef.current = false;
-          })
-          .catch((err) => {
-            console.error("Failed to stop QR scanner:", err);
-          });
+      // Reset the flag on unmount
+      isInitializedRef.current = false;
+      // The clear() method is promise-based. We'll attach a catch
+      // to handle potential errors during cleanup in strict mode.
+      if (scannerRef.current) {
+        scanner.clear().catch(error => {
+          console.error("Failed to clear html5QrcodeScanner.", error);
+        });
       }
     };
-  }, []);
+  }, []); // <-- CRUCIAL: An empty dependency array.
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80">

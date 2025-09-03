@@ -2,7 +2,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { loginUser, registerCustomer } from './authApi';
 import { LoginInput, RegisterInput, isApiError } from '@/types';
-import api from './axios';
+import api from './api';
 import { registerAdmin as registerAdminApi, registerAgent as registerAgentApi } from './authApi';
 import { RegisterAdminInput } from '@/types';
 import { User } from './adminSlice';
@@ -35,12 +35,9 @@ export const login = createAsyncThunk(
   async (credentials: LoginInput, { rejectWithValue }) => {
     try {
       const response = await loginUser(credentials);
-      return response.data; // The { user, token } object
+      return response.data;
     } catch (error: unknown) {
-      // Step 1: Type error as unknown
       if (isApiError(error)) {
-        // Step 2: Use the type guard
-        // Step 3: Safely access the message
         return rejectWithValue(error.response?.data?.message || 'Login failed');
       }
       return rejectWithValue('An unexpected error occurred');
@@ -48,8 +45,14 @@ export const login = createAsyncThunk(
   },
 );
 
-export const logoutUser = createAsyncThunk('auth/logout', async () => {
-  await api.post('/auth/logout');
+export const logoutUser = createAsyncThunk('auth/logout',
+  async (_, { rejectWithValue }) => {
+    try {
+    await api.post('/auth/logout');
+  } catch(error){
+    if(isApiError(error)) {return rejectWithValue(error.response?.data?.message || 'Logout failed')}
+    return rejectWithValue('An unexpected error occurred') 
+  }
 });
 
 // New thunk to check auth status on app load
@@ -132,28 +135,6 @@ const authSlice = createSlice({
         localStorage.setItem('user', JSON.stringify(updatedUser));
       }
     },
-    // setUser: (
-    //   state,
-    //   action: PayloadAction<{
-    //     id: string;
-    //     customerName: string;
-    //     email: string;
-    //     role: 'admin' | 'agent' | 'customer';
-    //     token: string;
-    //     address: string;
-    //     phone: string;
-    //   }>,
-    // ) => {
-    //   state.user = {
-    //     _id: action.payload.id,
-    //     customerName: action.payload.customerName,
-    //     email: action.payload.email,
-    //     role: action.payload.role,
-    //     address: action.payload.address,
-    //     phone: action.payload.phone,
-    //   };
-    //   state.isAuthenticated = true;
-    // },
     setUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload; // Just set the whole user object
       state.isAuthenticated = true;

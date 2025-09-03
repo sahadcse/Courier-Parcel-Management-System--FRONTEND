@@ -1,6 +1,8 @@
+// components/agent/AgentParcelList.tsx
+
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback  } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/lib/store';
 import { updateParcelStatus } from '@/lib/parcelSlice';
@@ -51,6 +53,13 @@ export default function AgentParcelList({ parcels, setActiveTab }: AgentParcelLi
     [ongoingDeliveries]
   );
 
+    // --- Determine the current scanning action ---
+  const scanAction = useMemo(() => {
+    if (pendingPickups.length > 0) return 'pickup';
+    if (ongoingDeliveries.length > 0) return 'delivery';
+    return 'idle'; // No active tasks
+  }, [pendingPickups, ongoingDeliveries]);
+
   // --- Effects ---
   useEffect(() => {
     if (navigator.permissions) {
@@ -63,25 +72,37 @@ export default function AgentParcelList({ parcels, setActiveTab }: AgentParcelLi
 
   useLocationTracker(activeParcelForTracking ? activeParcelForTracking.parcelId : null);
 
-  // --- Event Handlers ---
-  const handleScanSuccess = (decodedText: string) => {
+  // --- MODIFIED: Event Handler for successful scan ---
+  const handleScanSuccess = useCallback((decodedText: string) => {
     setIsScannerOpen(false);
+    
+    // Extract parcelId from the URL (e.g., http://.../track/PARCEL_ID)
     const urlParts = decodedText.split('/');
-    const parcelId = urlParts.pop();
+    const parcelId = urlParts.pop() || urlParts.pop(); // Handles trailing slash
 
-    if (parcelId) {
-      const parcelToUpdate = parcels.find(p => p.parcelId === parcelId);
-      if (parcelToUpdate) {
-        const nextStatus = parcelToUpdate.status === 'Assigned' ? 'Picked Up' : 'Delivered';
-        dispatch(updateParcelStatus({ parcelId, status: nextStatus }));
-        alert(`Parcel ${parcelId} status updated to ${nextStatus}!`);
-      } else {
-        alert('Scanned parcel not found in your active list.');
-      }
-    } else {
-      alert('Invalid QR code scanned.');
+    if (!parcelId) {
+      alert('Invalid QR code format.');
+      return;
     }
-  };
+
+    if (scanAction === 'pickup') {
+      const parcelToUpdate = pendingPickups.find(p => p.parcelId === parcelId);
+      if (parcelToUpdate) {
+        dispatch(updateParcelStatus({ parcelId, status: 'Picked Up' }));
+        alert(`Parcel ${parcelId} confirmed for pickup!`);
+      } else {
+        alert('Error: This parcel is not on your current pickup list.');
+      }
+    } else if (scanAction === 'delivery') {
+      const parcelToUpdate = ongoingDeliveries.find(p => p.parcelId === parcelId);
+      if (parcelToUpdate) {
+        dispatch(updateParcelStatus({ parcelId, status: 'Delivered' }));
+        alert(`Parcel ${parcelId} confirmed as delivered!`);
+      } else {
+        alert('Error: This parcel is not on your current delivery route.');
+      }
+    }
+  }, [scanAction, pendingPickups, ongoingDeliveries, dispatch]);
 
   const handleStatusChange = (parcelId: string, status: string) => {
     setSelectedStatus(prev => ({ ...prev, [parcelId]: status }));
@@ -118,6 +139,15 @@ export default function AgentParcelList({ parcels, setActiveTab }: AgentParcelLi
     );
   }
 
+  // --- NEW: Define dynamic button properties ---
+  const scanButtonText = scanAction === 'pickup' 
+    ? t('Scan to confirm pickup')
+    : scanAction === 'delivery' 
+    ? t('Scan to confirm delivery') 
+    : t('No active tasks');
+    
+  const isScanButtonDisabled = scanAction === 'idle';
+
   return (
     <>
       <div className="space-y-6">
@@ -132,11 +162,13 @@ export default function AgentParcelList({ parcels, setActiveTab }: AgentParcelLi
             >
               {t('view_optimized_route')}
             </button>
+            {/* --- Dynamic Scan Button --- */}
             <button
               onClick={() => setIsScannerOpen(true)}
-              className="bg-green-600 text-white px-5 py-2 rounded-lg shadow hover:bg-green-700"
+              disabled={isScanButtonDisabled}
+              className="bg-green-600 text-white px-5 py-2 rounded-lg shadow hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
-              {t('scan_parcel')}
+              {scanButtonText}
             </button>
           </div>
         </div>

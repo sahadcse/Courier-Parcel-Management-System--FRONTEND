@@ -1,3 +1,5 @@
+// components/auth/LogoutButton.tsx
+
 'use client';
 
 import { useDispatch, useSelector } from 'react-redux';

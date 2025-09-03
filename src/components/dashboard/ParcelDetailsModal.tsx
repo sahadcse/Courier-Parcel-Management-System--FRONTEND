@@ -2,6 +2,7 @@
 
 import { Parcel } from '@/types';
 import { useEffect, useState } from 'react';
+import StatusTimeline from "./../common/ParcelStatus"
 
 interface ParcelDetailsModalProps {
   parcel: Parcel;
@@ -60,10 +61,7 @@ export default function ParcelDetailsModal({ parcel, onClose }: ParcelDetailsMod
         <p className="text-sm font-bold text-primary-500 mb-4">{parcel.parcelId}</p>
 
         <div className="space-y-3 text-sm border-t pt-4 dark:border-gray-700">
-          <div className="flex justify-between">
-            <span className="text-gray-500 dark:text-gray-400">Status:</span>
-            <span className="font-semibold text-gray-800 dark:text-gray-200">{parcel.status}</span>
-          </div>
+          <StatusTimeline status={parcel.status} />
           <div className="flex justify-between">
             <span className="text-gray-500 dark:text-gray-400">Receiver Name:</span>
             <span className="font-semibold text-gray-800 dark:text-gray-200">{parcel.receiverName}</span>

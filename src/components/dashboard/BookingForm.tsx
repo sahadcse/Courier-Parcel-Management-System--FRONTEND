@@ -6,6 +6,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useAppDispatch } from '@/lib/store';
 import { createParcel, fetchParcels  } from '@/lib/parcelSlice';
 import { ParcelCreateInput, Parcel } from '@/types';
+import { addToast } from '@/lib/toastSlice';
 
 // --- Type Definitions for our location data ---
 interface BaseLocation {
@@ -170,10 +171,13 @@ export default function BookingForm() {
     setIsSubmitting(true);
     try {
       const result = await dispatch(createParcel(finalPayload)).unwrap();
+      dispatch(addToast({ message: 'Parcel booked successfully!', type: 'success' }));
       console.log('Parcel booked successfully:', result.data);
       setSubmissionResult(result.data);
       dispatch(fetchParcels());
     } catch (err: unknown) {
+      dispatch(addToast({ message: err || 'Failed to book parcel. Please try again.', type: 'error' }));
+      
       // Show the specific validation error from the backend
       if (typeof err === 'string') {
         setError(err);

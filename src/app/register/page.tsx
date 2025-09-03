@@ -1,15 +1,17 @@
 // src/app/register/page.tsx
 'use client';
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter  } from 'next/navigation';
 import { register, registerAgent  } from '@/lib/authSlice';
 import { AppDispatch, RootState } from '@/lib/store';
 import { RegisterInput } from '@/types';
 
+
 function RegisterForm() {
   const [formData, setFormData] = useState<RegisterInput>({});
   const [role, setRole] = useState<'customer' | 'agent'>('customer');
+  const {isAuthenticated, user  } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   
@@ -42,6 +44,13 @@ function RegisterForm() {
       setTimeout(() => router.push('/login'), 5000); 
     }
   };
+
+    useEffect(() => {
+    if (isAuthenticated && user?.role) {
+      // Redirect based on the user's role
+      router.push(`/${user.role}`);
+    }
+  }, [isAuthenticated, user, router]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">

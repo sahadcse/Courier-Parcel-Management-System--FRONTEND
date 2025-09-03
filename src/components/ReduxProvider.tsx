@@ -13,8 +13,10 @@ import { useEffect } from 'react';
  */
 export default function ReduxProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    // Check for a valid session cookie when the app loads
-    store.dispatch(verifyAuth());
+    // Check for a valid session cookie when the app loads, but only if there's stored user data
+    if (typeof window !== 'undefined' && localStorage.getItem('user')) {
+      store.dispatch(verifyAuth());
+    }
   }, []);
   
   return <Provider store={store}>{children}</Provider>;

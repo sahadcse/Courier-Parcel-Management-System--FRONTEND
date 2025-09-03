@@ -1,6 +1,6 @@
 // src/lib/parcelSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import api from './axios';
+import api from './api';
 import { isApiError, Parcel, ParcelCreateInput } from '@/types';
 
 // Define the types based on your openapi.yaml schema

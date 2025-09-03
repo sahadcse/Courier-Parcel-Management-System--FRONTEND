@@ -1,4 +1,4 @@
-import api from './axios';
+import api from './api';
 
 // This function will fetch all users for the admin
 export const fetchAllUsers = async () => {
