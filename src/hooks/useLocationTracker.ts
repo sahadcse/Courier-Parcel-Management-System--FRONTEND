@@ -33,7 +33,7 @@ export function useLocationTracker(activeParcelId: string | null) {
         parcelId,
         coordinates: { lat, lng },
       });
-      console.log('✅ Location update sent:', { lat, lng });
+      // console.log('✅ Location update sent:', { lat, lng });
       if(response.data && response.data.success) {
         return response.data;
       }
@@ -48,7 +48,7 @@ export function useLocationTracker(activeParcelId: string | null) {
       if (watchIdRef.current !== null) {
         navigator.geolocation.clearWatch(watchIdRef.current);
         watchIdRef.current = null;
-        console.log('🔴 Location tracking stopped - no active parcel');
+        // console.log('🔴 Location tracking stopped - no active parcel');
       }
       return;
     }
@@ -59,7 +59,7 @@ export function useLocationTracker(activeParcelId: string | null) {
       return;
     }
 
-    console.log('🟢 Starting location tracking for parcel:', activeParcelId);
+    // console.log('🟢 Starting location tracking for parcel:', activeParcelId);
 
     // Start tracking if there is an active parcel
     watchIdRef.current = navigator.geolocation.watchPosition(
@@ -125,7 +125,7 @@ export function useLocationTracker(activeParcelId: string | null) {
     return () => {
       if (watchIdRef.current !== null) {
         navigator.geolocation.clearWatch(watchIdRef.current);
-        console.log('🔴 Location tracking stopped - component unmounted');
+        // console.log('🔴 Location tracking stopped - component unmounted');
       }
     };
   }, [activeParcelId, calculateDistance, sendLocationUpdate]);

@@ -1,7 +1,7 @@
 // lib/axios.ts
 
 import { AxiosError } from 'axios';
-import api from './api'; // Import the clean instance from api.ts
+import api from './api'; 
 import { store } from './store';
 
 // State for managing a single token refresh process
@@ -12,7 +12,7 @@ let failedRequestsQueue: { resolve: (value: unknown) => void; reject: (reason?: 
 api.interceptors.response.use(
   (response) => response, // Directly return successful responses
   async (error: AxiosError) => {
-    console.log("Interceptor caught an error:", error.response?.status);
+    // console.log("Interceptor caught an error:", error.response?.status);
 
     const originalRequest = error.config;
 
@@ -21,14 +21,14 @@ api.interceptors.response.use(
       return Promise.reject(error); // Reject all other errors
     }
 
-    console.log("Error is 401. Attempting to refresh token...");
+    // console.log("Error is 401. Attempting to refresh token...");
 
     // 2. Prevent infinite loops for the refresh endpoint itself
     if (originalRequest.url === '/auth/refresh' || originalRequest._retry) {
       return Promise.reject(error);
     }
 
-    console.log("No active refresh token request. Proceeding with token refresh...");
+    // console.log("No active refresh token request. Proceeding with token refresh...");
 
     // 3. Handle concurrent requests
     if (isRefreshing) {
@@ -37,7 +37,7 @@ api.interceptors.response.use(
       });
     }
 
-    console.log("Setting up a new refresh token request...");
+    // console.log("Setting up a new refresh token request...");
 
     originalRequest._retry = true;
     isRefreshing = true;
@@ -52,14 +52,14 @@ api.interceptors.response.use(
       // Retry the original failed request with the new token
       const response = await api(originalRequest);
 
-      console.log("Retried original request successfully.");
+      // console.log("Retried original request successfully.");
 
       // Process all other failed requests that were queued
       failedRequestsQueue.forEach(promise => promise.resolve(api(originalRequest)));
       failedRequestsQueue = [];
 
-      console.log("All queued requests have been retried.");
-      console.log("Final response:", response);
+      // console.log("All queued requests have been retried.");
+      // console.log("Final response:", response);
       return response;
     } catch (refreshError) {
       // If the refresh token is also invalid, log the user out

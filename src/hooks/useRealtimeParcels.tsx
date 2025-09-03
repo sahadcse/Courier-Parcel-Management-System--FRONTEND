@@ -50,11 +50,11 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
       // 2. THIS IS THE KEY: Listen for connection errors
       newSocket.on('connect_error', async err => {
-        console.error('Socket.IO connection error:', err.message);
+        // console.error('Socket.IO connection error:', err.message);
 
         // Check if the error is due to an expired/invalid token
         if (err.message.includes('Invalid token') || err.message.includes('Authentication error')) {
-          console.log('Attempting to refresh token for Socket.IO...');
+          // console.log('Attempting to refresh token for Socket.IO...');
           try {
             // 3. Use your existing Axios instance to refresh the token
             await api.post('/auth/refresh');
@@ -62,8 +62,8 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
             // 4. Manually try to connect again after a successful refresh
             newSocket.connect();
-          } catch (refreshError) {
-            console.error('Failed to refresh token for Socket.IO:', refreshError);
+          } catch (_refreshError) {
+            // console.error('Failed to refresh token for Socket.IO:', refreshError);
             // If refresh fails, the user will be logged out by the Axios interceptor
           }
         }

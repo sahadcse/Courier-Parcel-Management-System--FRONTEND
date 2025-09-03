@@ -3,23 +3,6 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import api from './api';
 import { isApiError, Parcel, ParcelCreateInput } from '@/types';
 
-// Define the types based on your openapi.yaml schema
-// export interface Parcel {
-//   _id: string;
-//   parcelId: string;
-//   sender: string;
-//   assignedAgent?: string;
-//   deliveryAddress: string;
-//   receiverName: string;
-//   status: 'Booked' | 'Assigned' | 'Picked Up' | 'In Transit' | 'Delivered' | 'Failed';
-//   createdAt: string;
-//   pickupAddress: string;
-//   receiverNumber: string;
-//   deliveryCoordinates?: {
-//     type: 'Point';
-//     coordinates: [number, number]; // [lng, lat]
-//   };
-// }
 
 interface ParcelState {
   parcels: Parcel[];
