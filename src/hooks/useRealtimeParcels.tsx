@@ -27,7 +27,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     // Only attempt to connect if the user is authenticated and auth loading is finished
     if (isAuthenticated && loading === 'succeeded') {
       // Create the socket connection
-      const newSocket = io('http://localhost:5000', {
+      const newSocket = io(process.env.SOCKET_API_URL || 'http://localhost:5000', {
         withCredentials: true,
         // We prevent auto-connection to manually handle it after a refresh
         autoConnect: true,
