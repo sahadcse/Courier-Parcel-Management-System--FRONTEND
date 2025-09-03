@@ -29,7 +29,22 @@ export default function AgentDashboard() {
   return (
     <AuthGuard allowedRoles={['agent']}>
       {user && !user.isActive ? (
-        <div className="flex flex-col items-center justify-center text-center p-8 border rounded-lg bg-yellow-50 dark:bg-gray-800 border-yellow-300 dark:border-yellow-700">
+        // --- Improved "Account Inactive" View ---
+        <div className="flex flex-col items-center justify-center text-center p-8 border rounded-lg bg-yellow-50 dark:bg-gray-800 border-yellow-300 dark:border-yellow-700 max-w-lg mx-auto">
+          <div className="text-yellow-500 mb-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-12 w-12"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.21 3.031-1.742 3.031H4.42c-1.532 0-2.492-1.697-1.742-3.031l5.58-9.92zM10 13a1 1 0 110-2 1 1 0 010 2zm-1-8a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </div>
           <h2 className="text-2xl font-bold text-yellow-800 dark:text-yellow-300">
             {t('agent_inactive_title')}
           </h2>
@@ -37,40 +52,64 @@ export default function AgentDashboard() {
         </div>
       ) : (
         <div>
-          <div className="flex border-b mb-6">
-            <button
-              onClick={() => setActiveTab('active')}
-              className={`py-2 px-4 ${activeTab === 'active' ? 'border-b-2 border-primary-500' : ''}`}
-            >
-              {t('agent_menu_1')}
-            </button>
-            <button
-              onClick={() => setActiveTab('route')}
-              className={`py-2 px-4 ${activeTab === 'route' ? 'border-b-2 border-primary-500' : ''}`}
-            >
-              {t('route_view')}
-            </button>
-            <button
-              onClick={() => setActiveTab('history')}
-              className={`py-2 px-4 ${activeTab === 'history' ? 'border-b-2 border-primary-500' : ''}`}
-            >
-              {t('delivery_history')}
-            </button>
-            <button
-              onClick={() => setActiveTab('profile')}
-              className={`py-2 px-4 ${activeTab === 'profile' ? 'border-b-2 border-primary-500' : ''}`}
-            >
-              {t('profile')}
-            </button>
+          {/* --- Improved & Responsive Tab Navigation --- */}
+          <div className="border-b border-gray-200 dark:border-gray-700">
+            <nav className="-mb-px flex gap-4 overflow-x-auto">
+              <button
+                onClick={() => setActiveTab('active')}
+                className={`whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors
+            ${
+              activeTab === 'active'
+                ? 'border-primary-500 text-primary-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+              >
+                {t('agent_menu_1')}
+              </button>
+              <button
+                onClick={() => setActiveTab('route')}
+                className={`whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors
+            ${
+              activeTab === 'route'
+                ? 'border-primary-500 text-primary-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+              >
+                {t('route_view')}
+              </button>
+              <button
+                onClick={() => setActiveTab('history')}
+                className={`whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors
+            ${
+              activeTab === 'history'
+                ? 'border-primary-500 text-primary-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+              >
+                {t('delivery_history')}
+              </button>
+              <button
+                onClick={() => setActiveTab('profile')}
+                className={`whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors
+            ${
+              activeTab === 'profile'
+                ? 'border-primary-500 text-primary-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+              >
+                {t('profile')}
+              </button>
+            </nav>
           </div>
 
-          {/* Use 'as any' to resolve the minor type mismatch for the prop */}
-          {activeTab === 'active' && (
-            <AgentParcelList parcels={parcels} setActiveTab={setActiveTab} />
-          )}
-          {activeTab === 'history' && <AgentHistoryList parcels={parcels} />}
-          {activeTab === 'profile' && <UserProfile />}
-          {activeTab === 'route' && <RouteViewList />}
+          <div className="mt-6">
+            {activeTab === 'active' && (
+              <AgentParcelList parcels={parcels} setActiveTab={setActiveTab} />
+            )}
+            {activeTab === 'history' && <AgentHistoryList parcels={parcels} />}
+            {activeTab === 'profile' && <UserProfile />}
+            {activeTab === 'route' && <RouteViewList />}
+          </div>
         </div>
       )}
     </AuthGuard>
