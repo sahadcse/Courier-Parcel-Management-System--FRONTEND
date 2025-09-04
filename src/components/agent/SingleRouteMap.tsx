@@ -21,11 +21,6 @@ const RoutingComponent = ({ start, end }: SingleRouteMapProps) => {
   useEffect(() => {
     if (!map) return;
 
-    // First, clean up any existing route from a previous render.
-    // This is crucial for handling React Strict Mode's double-mount.
-    // if (routingControlRef.current) {
-    //   map.addControl(routingControlRef.current);
-    // }
 
     const waypoints = [L.latLng(start.lat, start.lng), L.latLng(end.lat, end.lng)];
 

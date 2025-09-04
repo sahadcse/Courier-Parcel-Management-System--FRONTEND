@@ -92,9 +92,9 @@ export default function AgentParcelList({ parcels, setActiveTab }: AgentParcelLi
     <>
       <div className="space-y-6">
         {/* Action Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-center p-2 rounded-lg gap-4">
+        <div className="flex flex-col sm:flex-row justify-between  p-2 rounded-lg gap-4">
           <h2 className="text-xl font-semibold">{t('active_deliveries')}</h2>
-          <div className="flex gap-2">
+          <div className="flex flex-col md:flex-row gap-2">
             <button onClick={() => setActiveTab('route')} disabled={!isRouteAvailable} className="bg-blue-600 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-700 disabled:opacity-50 transition-colors">
               {t('view_optimized_route')}
             </button>

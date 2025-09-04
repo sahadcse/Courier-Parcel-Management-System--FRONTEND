@@ -7,9 +7,16 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/lib/store';
 import dynamic from 'next/dynamic';
 
+import { MapPin, ChevronDown } from 'lucide-react';
+import clsx from 'clsx';
+
 const SingleRouteMap = dynamic(() => import('./SingleRouteMap'), {
   ssr: false,
-  loading: () => <div className="h-[300px] bg-gray-200 animate-pulse rounded-lg flex items-center justify-center">Loading map...</div>,
+  loading: () => (
+    <div className="h-[300px] bg-gray-200 animate-pulse rounded-lg flex items-center justify-center">
+      Loading map...
+    </div>
+  ),
 });
 
 export default function RouteViewList() {
@@ -18,14 +25,11 @@ export default function RouteViewList() {
   const [locationError, setLocationError] = useState<string | null>(null);
   const [expandedParcelId, setExpandedParcelId] = useState<string | null>(null);
 
-  // --- DEBUGGING LOG ---
-  // This will show you exactly what parcel data the component is receiving from Redux.
-//   console.log("Parcels available in RouteViewList:", parcels);
-  // ---------------------
+  const isExpanded = (id: string) => expandedParcelId === id;
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      position => {
         setAgentLocation({
           lat: position.coords.latitude,
           lng: position.coords.longitude,
@@ -33,14 +37,17 @@ export default function RouteViewList() {
         setLocationError(null);
       },
       () => {
-        setLocationError("Could not get your current location. Please enable location services.");
-      }
+        setLocationError('Could not get your current location. Please enable location services.');
+      },
     );
   }, []);
 
-  const activeParcels = useMemo(() =>
-    parcels.filter(p => (p.status === 'Assigned' || p.status === 'Picked Up' || p.status === 'In Transit') && p.deliveryCoordinates),
-    [parcels]
+  const activeParcels = useMemo(
+    () =>
+      parcels.filter(
+        p => ['Assigned', 'Picked Up', 'In Transit'].includes(p.status) && p.deliveryCoordinates,
+      ),
+    [parcels],
   );
 
   const handleToggleRoute = (id: string) => {
@@ -49,42 +56,70 @@ export default function RouteViewList() {
 
   return (
     <div className="space-y-4">
-      {locationError && <div className="p-4 bg-red-100 text-red-700 rounded-lg">{locationError}</div>}
-      
+      {locationError && (
+        <div className="p-4 bg-red-100 text-red-700 rounded-lg">{locationError}</div>
+      )}
+
       {activeParcels.length > 0 ? (
         activeParcels.map((parcel, index) => (
-          <div key={parcel._id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md border dark:border-gray-700 transition-all duration-300">
-            <div className="p-4 flex justify-between items-center">
+          <article
+            key={parcel._id}
+            className="overflow-hidden rounded-lg border bg-white shadow-sm transition-shadow duration-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
+          >
+            <header className="flex flex-col items-start gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="font-bold">{index + 1}. {parcel.receiverName}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Parcel ID: {parcel.parcelId}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{parcel.deliveryAddress}</p>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                  {index + 1}. {parcel.receiverName}
+                </h3>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  Parcel ID: {parcel.parcelId}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">{parcel.deliveryAddress}</p>
               </div>
               <button
                 onClick={() => handleToggleRoute(parcel._id)}
                 disabled={!agentLocation}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 disabled:opacity-50"
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold  transition-colors hover:bg-primary-700 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-primary-600 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
               >
                 {expandedParcelId === parcel._id ? 'Hide Route' : 'Show Route'}
-              </button>
-            </div>
-            
-            {expandedParcelId === parcel._id && agentLocation && (
-              <div className="p-2 border-t dark:border-gray-700">
-                <SingleRouteMap
-                  start={agentLocation}
-                  end={{
-                    lat: parcel.deliveryCoordinates!.coordinates[1],
-                    lng: parcel.deliveryCoordinates!.coordinates[0],
-                  }}
+                <ChevronDown
+                  size={16}
+                  className={clsx(
+                    'transition-transform duration-300',
+                    isExpanded(parcel._id) && 'rotate-180',
+                  )}
                 />
+              </button>
+            </header>
+
+            <div
+              className={clsx(
+                'grid transition-[grid-template-rows] duration-300 ease-in-out',
+                isExpanded(parcel._id) ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
+              )}
+            >
+              <div className="overflow-hidden">
+                {expandedParcelId === parcel._id && agentLocation && (
+                  <div className="p-2 border-t dark:border-gray-700">
+                    <SingleRouteMap
+                      start={agentLocation}
+                      end={{
+                      lat: parcel.deliveryCoordinates!.coordinates[1],
+                      lng: parcel.deliveryCoordinates!.coordinates[0],
+                    }}
+                  />
+                </div>
+              )}
               </div>
-            )}
-          </div>
+            </div>
+          </article>
         ))
       ) : (
-        <div className="text-center py-10 text-gray-500 bg-gray-50 rounded-lg">
-          <p className="font-semibold">No active deliveries to route.</p>
+        <div className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-gray-200 bg-white py-12 text-center dark:border-gray-700 dark:bg-gray-800">
+          <MapPin size={40} className="text-gray-400" />
+          <p className="font-semibold text-gray-600 dark:text-gray-400">
+            No active deliveries to route.
+          </p>
         </div>
       )}
     </div>

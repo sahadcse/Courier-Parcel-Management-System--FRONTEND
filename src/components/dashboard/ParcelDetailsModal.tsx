@@ -2,7 +2,8 @@
 
 import { Parcel } from '@/types';
 import { useEffect, useState } from 'react';
-import StatusTimeline from "./../common/ParcelStatus"
+import StatusTimeline from "./../common/ParcelStatus";
+import { X } from 'lucide-react';
 
 interface ParcelDetailsModalProps {
   parcel: Parcel;
@@ -10,81 +11,109 @@ interface ParcelDetailsModalProps {
 }
 
 export default function ParcelDetailsModal({ parcel, onClose }: ParcelDetailsModalProps) {
-  // State to control the enter/exit animation
   const [isAnimating, setIsAnimating] = useState(false);
 
+  // Effect for enter/exit animations
   useEffect(() => {
-    // Trigger the "enter" animation shortly after the component mounts
-    const timer = setTimeout(() => setIsAnimating(true), 10);
-    return () => clearTimeout(timer);
+    const enterTimer = setTimeout(() => setIsAnimating(true), 10);
+    return () => clearTimeout(enterTimer);
+  }, []);
+
+  // Effect to handle closing the modal with the 'Escape' key for accessibility
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   const handleClose = () => {
     setIsAnimating(false);
-    // Wait for the "exit" animation to finish before calling the parent's onClose
-    setTimeout(onClose, 300); // Duration should match the transition duration
+    setTimeout(onClose, 300); // Match transition duration
   };
 
-  // Prevent clicks inside the modal from closing it
   const handleModalContentClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
+    e.stopPropagation(); // Prevent clicks inside the modal from closing it
   };
 
   return (
     // Backdrop with blur and fade animation
     <div
       onClick={handleClose}
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm transition-opacity duration-300 ease-in-out
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity duration-300 ease-in-out
         ${isAnimating ? 'opacity-100' : 'opacity-0'}
       `}
+      // Accessibility attributes for the modal dialog
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="parcel-details-title"
     >
-      {/* Modal Content with scale and fade animation */}
+      {/* Modal Panel with responsive width, max-height, and animations */}
       <div
         onClick={handleModalContentClick}
-        className={`bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-lg relative transform transition-all duration-300 ease-in-out
+        className={`relative flex w-full max-w-2xl flex-col rounded-xl bg-white shadow-2xl transition-all duration-300 ease-in-out dark:bg-gray-800 mx-4 max-h-[90vh]
           ${isAnimating ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}
         `}
       >
-        {/* Close Button */}
-        <button
-          onClick={handleClose}
-          className="absolute cursor-pointer top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-        >
-          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+        {/* Modal Header */}
+        <header className="flex items-center justify-between border-b p-4 dark:border-gray-700">
+          <div>
+            <h2 id="parcel-details-title" className="text-xl font-bold text-gray-900 dark:text-white">
+              Parcel Details
+            </h2>
+            <p className="text-sm font-semibold text-primary-600 dark:text-primary-400">{parcel.parcelId}</p>
+          </div>
+          <button
+            onClick={handleClose}
+            aria-label="Close modal"
+            className="rounded-full p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
+          >
+            <X size={24} />
+          </button>
+        </header>
 
-        <h2 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">
-          Parcel Details
-        </h2>
-        <p className="text-sm font-bold text-primary-500 mb-4">{parcel.parcelId}</p>
-
-        <div className="space-y-3 text-sm border-t pt-4 dark:border-gray-700">
+        {/* Modal Body (Scrollable Content) */}
+        <div className="flex-1 space-y-6 overflow-y-auto p-6">
+          {/* Status Timeline */}
           <StatusTimeline status={parcel.status} />
-          <div className="flex justify-between">
-            <span className="text-gray-500 dark:text-gray-400">Receiver Name:</span>
-            <span className="font-semibold text-gray-800 dark:text-gray-200">{parcel.receiverName}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500 dark:text-gray-400">Receiver Number:</span>
-            <span className="font-semibold text-gray-800 dark:text-gray-200">{parcel.receiverNumber}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500 dark:text-gray-400">Pickup Address:</span>
-            <span className="font-semibold text-gray-800 dark:text-gray-200 text-right">{parcel.pickupAddress}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500 dark:text-gray-400">Delivery Address:</span>
-            <span className="font-semibold text-gray-800 dark:text-gray-200 text-right">{parcel.deliveryAddress}</span>
-          </div>
-           <div className="flex justify-between">
-            <span className="text-gray-500 dark:text-gray-400">Parcel Type:</span>
-            <span className="font-semibold text-gray-800 dark:text-gray-200">{parcel.parcelType}</span>
-          </div>
-           <div className="flex justify-between">
-            <span className="text-gray-500 dark:text-gray-400">Payment:</span>
-            <span className="font-semibold text-gray-800 dark:text-gray-200">{parcel.paymentType} {parcel.paymentType === 'COD' && `(${parcel.codAmount} BDT)`}</span>
+
+          {/* Details Grid (Responsive: 1 col on mobile, 2 cols on desktop) */}
+          <div className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <p className="text-sm text-gray-500 dark:text-gray-400">Receiver Name</p>
+              <p className="font-semibold text-gray-800 dark:text-gray-200">{parcel.receiverName}</p>
+            </div>
+            
+            <div>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Receiver Number</p>
+              <p className="font-semibold text-gray-800 dark:text-gray-200">{parcel.receiverNumber}</p>
+            </div>
+            
+            <div>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Parcel Type</p>
+              <p className="font-semibold text-gray-800 dark:text-gray-200">{parcel.parcelType}</p>
+            </div>
+
+            <div className="sm:col-span-2">
+              <p className="text-sm text-gray-500 dark:text-gray-400">Pickup Address</p>
+              <p className="font-semibold text-gray-800 dark:text-gray-200">{parcel.pickupAddress}</p>
+            </div>
+
+            <div className="sm:col-span-2">
+              <p className="text-sm text-gray-500 dark:text-gray-400">Delivery Address</p>
+              <p className="font-semibold text-gray-800 dark:text-gray-200">{parcel.deliveryAddress}</p>
+            </div>
+
+            <div className="sm:col-span-2 border-t pt-4 dark:border-gray-700">
+              <p className="text-sm text-gray-500 dark:text-gray-400">Payment</p>
+              <p className="font-semibold text-gray-800 dark:text-gray-200">
+                {parcel.paymentType} 
+                {parcel.paymentType === 'COD' && ` (${parcel.codAmount} BDT)`}
+              </p>
+            </div>
           </div>
         </div>
       </div>

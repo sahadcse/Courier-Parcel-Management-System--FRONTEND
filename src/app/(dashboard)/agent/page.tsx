@@ -9,8 +9,9 @@ import AuthGuard from '@/components/auth/AuthGuard';
 import AgentParcelList from '@/components/agent/AgentParcelList';
 import AgentHistoryList from '@/components/agent/AgentHistoryList';
 import UserProfile from '@/components/dashboard/UserProfile';
-import RouteViewList from '@/components/agent/RouteViewList'; // The correct component for the route tab
+import RouteViewList from '@/components/agent/RouteViewList';
 import { useClientTranslation } from '@/hooks/useClientTranslation';
+import BottomNavigation from '@/components/common/BottomNavigation';
 
 type AgentTab = 'active' | 'route' | 'history' | 'profile';
 
@@ -21,7 +22,6 @@ export default function AgentDashboard() {
   const { parcels } = useSelector((state: RootState) => state.parcels);
   const { t } = useClientTranslation();
 
-  // Fetch data once in the parent component
   useEffect(() => {
     dispatch(fetchParcels());
   }, [dispatch]);
@@ -29,7 +29,6 @@ export default function AgentDashboard() {
   return (
     <AuthGuard allowedRoles={['agent']}>
       {user && !user.isActive ? (
-        // --- Improved "Account Inactive" View ---
         <div className="flex flex-col items-center justify-center text-center p-8 border rounded-lg bg-yellow-50 dark:bg-gray-800 border-yellow-300 dark:border-yellow-700 max-w-lg mx-auto">
           <div className="text-yellow-500 mb-4">
             <svg
@@ -51,9 +50,9 @@ export default function AgentDashboard() {
           <p className="mt-2 text-gray-600 dark:text-gray-400">{t('agent_inactive_message')}</p>
         </div>
       ) : (
-        <div>
-          {/* --- Improved & Responsive Tab Navigation --- */}
-          <div className="border-b border-gray-200 dark:border-gray-700">
+        <div className="pb-16 sm:pb-0">
+          {' '}
+          <div className="hidden sm:block border-b border-gray-200 dark:border-gray-700">
             <nav className="-mb-px flex gap-4 overflow-x-auto">
               <button
                 onClick={() => setActiveTab('active')}
@@ -101,7 +100,17 @@ export default function AgentDashboard() {
               </button>
             </nav>
           </div>
-
+          {/* --- Bottom Navigation Bar (visible on small screens) --- */}
+          <BottomNavigation
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            tabs={[
+              { id: 'active', label: t('agent_menu_1') },
+              { id: 'route', label: t('route_view') },
+              { id: 'history', label: t('delivery_history') },
+              { id: 'profile', label: t('profile') },
+            ]}
+          />
           <div className="mt-6">
             {activeTab === 'active' && (
               <AgentParcelList parcels={parcels} setActiveTab={setActiveTab} />
