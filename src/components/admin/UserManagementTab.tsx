@@ -72,7 +72,7 @@ export default function UserManagementTab() {
   if (loading === 'pending') return <p>Loading users...</p>;
 
   return (
-    <>
+    <section className="mt-4">
       <div>
         <UserList title="Administrators" users={admins} onViewDetails={setSelectedUser} />
         <UserList title="Agents" users={agents} onStatusToggle={handleStatusToggle} onViewDetails={setSelectedUser} />
@@ -85,6 +85,6 @@ export default function UserManagementTab() {
           onClose={() => setSelectedUser(null)} 
         />
       )}
-    </>
+    </section>
   );
 }

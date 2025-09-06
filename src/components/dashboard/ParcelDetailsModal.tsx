@@ -13,13 +13,11 @@ interface ParcelDetailsModalProps {
 export default function ParcelDetailsModal({ parcel, onClose }: ParcelDetailsModalProps) {
   const [isAnimating, setIsAnimating] = useState(false);
 
-  // Effect for enter/exit animations
   useEffect(() => {
     const enterTimer = setTimeout(() => setIsAnimating(true), 10);
     return () => clearTimeout(enterTimer);
   }, []);
 
-  // Effect to handle closing the modal with the 'Escape' key for accessibility
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -32,21 +30,19 @@ export default function ParcelDetailsModal({ parcel, onClose }: ParcelDetailsMod
 
   const handleClose = () => {
     setIsAnimating(false);
-    setTimeout(onClose, 300); // Match transition duration
+    setTimeout(onClose, 300);
   };
 
   const handleModalContentClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent clicks inside the modal from closing it
+    e.stopPropagation();
   };
 
   return (
-    // Backdrop with blur and fade animation
     <div
       onClick={handleClose}
       className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity duration-300 ease-in-out
         ${isAnimating ? 'opacity-100' : 'opacity-0'}
       `}
-      // Accessibility attributes for the modal dialog
       role="dialog"
       aria-modal="true"
       aria-labelledby="parcel-details-title"
@@ -80,7 +76,7 @@ export default function ParcelDetailsModal({ parcel, onClose }: ParcelDetailsMod
           {/* Status Timeline */}
           <StatusTimeline status={parcel.status} />
 
-          {/* Details Grid (Responsive: 1 col on mobile, 2 cols on desktop) */}
+          {/* Details Grid */}
           <div className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
             <div className="sm:col-span-2">
               <p className="text-sm text-gray-500 dark:text-gray-400">Receiver Name</p>

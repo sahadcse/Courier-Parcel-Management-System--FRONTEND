@@ -20,7 +20,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,
 
 
 const StatCard = ({ title, value, icon }: { title: string; value: string | number; icon: string }) => (
-  <div className="bg-white p-4 rounded-lg shadow">
+  <div className="bg-white p-4 rounded-lg shadow dark:text-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 mb-4">
     <div className="flex items-center">
       <div className="text-3xl mr-4">{icon}</div>
       <div>
@@ -90,20 +90,20 @@ export default function AdminAnalyticsDashboard() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y- mt-4">
       {/* Stat Cards Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
         <StatCard title="Total COD Amount" value={`${totalCod} BDT`} icon="💰" />
-        <StatCard title="Failed Deliveries" value={failedDeliveries} icon="❌" />
+        <StatCard title="Failed Deliveries" value={failedDeliveries} icon="❌"/>
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white p-4 rounded-lg shadow">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 ">
+        <div className="bg-white p-4 rounded-lg shadow dark:text-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
           <h3 className="font-bold mb-2">Daily Bookings (Last 7 Days)</h3>
           <Bar data={barChartData} options={barChartOptions} />
         </div>
-        <div className="bg-white p-4 rounded-lg shadow">
+        <div className="bg-white p-4 rounded-lg shadow dark:text-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
           <h3 className="font-bold mb-2 text-center">Parcel Status Distribution</h3>
           <div className="relative mx-auto" style={{ maxWidth: '300px', maxHeight: '300px' }}>
             <Pie data={pieChartData} />

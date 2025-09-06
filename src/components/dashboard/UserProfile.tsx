@@ -15,7 +15,7 @@ export default function UserProfile() {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 max-w-lg mx-auto">
+    <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 max-w-lg mx-auto mt-4" >
       <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">
         My Profile
       </h2>

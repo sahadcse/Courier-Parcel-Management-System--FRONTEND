@@ -46,8 +46,8 @@ export default function LoginPage() {
   }, [isAuthenticated, user, router]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <form onSubmit={handleSubmit} className="p-8 bg-white shadow-md rounded-lg w-96">
+    <div className="flex flex-col items-center justify-center min-h-screen dark:text-white dark:bg-black">
+      <form onSubmit={handleSubmit} className="p-8 bg-white shadow-md rounded-lg w-96 dark:bg-gray-800">
         <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         <div className="mb-4">

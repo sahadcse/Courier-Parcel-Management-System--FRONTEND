@@ -4,6 +4,7 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useSearchParams } from 'next/navigation';
 import { AppDispatch, RootState } from '@/lib/store';
 import { updateParcelStatus } from '@/lib/parcelSlice';
 import { useLocationTracker } from '@/hooks/useLocationTracker';
@@ -17,10 +18,10 @@ import { useClientTranslation } from '@/hooks/useClientTranslation';
 interface AgentParcelListProps {
   parcels: Parcel[];
   // setActiveTab: (tab: AgentTab) => void;
-  setActiveTab: (tab: 'active' | 'route' | 'history' | 'profile') => void;
+  // setActiveTab: (tab: 'active' | 'route' | 'history' | 'profile') => void;
 }
 
-export default function AgentParcelList({ parcels, setActiveTab }: AgentParcelListProps) {
+export default function AgentParcelList({ parcels }: AgentParcelListProps) {
   // --- State and Redux Hooks ---
   const dispatch = useDispatch<AppDispatch>();
   const { loading } = useSelector((state: RootState) => state.parcels);
@@ -30,6 +31,9 @@ export default function AgentParcelList({ parcels, setActiveTab }: AgentParcelLi
   const [invoiceParcel, setInvoiceParcel] = useState<Parcel | null>(null);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const { t } = useClientTranslation();
+ 
+  const searchParams = useSearchParams();
+  const activeTab = searchParams.get('tab') || 'route';
 
   // --- Memoized Filtering and Logic ---
   const pendingPickups = useMemo(() => parcels.filter(p => p.status === 'Assigned'), [parcels]);
@@ -95,7 +99,7 @@ export default function AgentParcelList({ parcels, setActiveTab }: AgentParcelLi
         <div className="flex flex-col sm:flex-row justify-between  p-2 rounded-lg gap-4">
           <h2 className="text-xl font-semibold">{t('active_deliveries')}</h2>
           <div className="flex flex-col md:flex-row gap-2">
-            <button onClick={() => setActiveTab('route')} disabled={!isRouteAvailable} className="bg-blue-600 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-700 disabled:opacity-50 transition-colors">
+            <button onClick={() => activeTab} disabled={!isRouteAvailable} className="bg-blue-600 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-700 disabled:opacity-50 transition-colors">
               {t('view_optimized_route')}
             </button>
             <button onClick={() => setIsScannerOpen(true)} disabled={isScanButtonDisabled} className="bg-green-600 text-white px-5 py-2 rounded-lg shadow hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed">

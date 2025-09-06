@@ -53,8 +53,8 @@ function RegisterForm() {
   }, [isAuthenticated, user, router]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <form onSubmit={handleSubmit} className="p-8 bg-white shadow-md rounded-lg w-full max-w-md">
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 dark:text-white dark:bg-black">
+      <form onSubmit={handleSubmit} className="p-8 bg-white shadow-md rounded-lg w-full max-w-md dark:bg-gray-800">
         <h1 className="text-2xl font-bold mb-6 text-center">{pageTitle}</h1>
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         {successMessage && <p className="text-green-500 text-center mb-4">{successMessage}</p>}
@@ -98,15 +98,17 @@ function RegisterForm() {
           <input
             type="tel"
             name="phone"
-            placeholder="Phone Number (Optional)"
+            placeholder="Phone Number "
             onChange={handleChange}
             className="w-full p-3 border rounded"
+            required
           />
           <input
             name="address"
-            placeholder="Address (Optional)"
+            placeholder="Address"
             onChange={handleChange}
             className="w-full p-3 border rounded"
+            required
           />
         </div>
         <button
