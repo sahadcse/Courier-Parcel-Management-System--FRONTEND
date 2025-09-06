@@ -19,12 +19,12 @@ export default function ActionHeader({ pendingCount, ongoingCount, onScanSuccess
 
   // Logic for the dynamic scan button
   const isScanButtonDisabled = pendingCount === 0 && ongoingCount === 0;
-  const scanButtonText = pendingCount > 0 ? t('scan_to_pickup') : t('scan_to_deliver');
+  const scanButtonText = pendingCount > 0 ? t('Scan to Pickup') : t('Scan to Deliver');
 
   return (
     <>
       <div className="flex flex-col sm:flex-row justify-between p-2 rounded-lg gap-4">
-        <h2 className="text-xl font-semibold">{t('active_deliveries')}</h2>
+        <h2 className="text-xl font-semibold">{t('Active Deliveries')}</h2>
         <div className="flex flex-col md:flex-row gap-2">
           <Link
             href="/agent/route"

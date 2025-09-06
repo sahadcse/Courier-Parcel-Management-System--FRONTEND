@@ -18,7 +18,7 @@ export const DASHBOARD_TABS: {
   customer: NavTab[];
 } = {
   admin: [
-    { id: 'reports', label: 'Reports', href: '/admin/reports', icon: <LineChart size={20} /> },
+    { id: 'reports', label: 'Reports', href: '/admin', icon: <LineChart size={20} /> },
     { id: 'parcels', label: 'Parcels', href: '/admin/parcels', icon: <Package size={20} /> },
     { id: 'live_monitor', label: 'Live Monitor', href: '/admin/live_monitor', icon: <MapPinned size={20} /> },
     { id: 'users', label: 'Users', href: '/admin/users', icon: <User size={20} /> },
@@ -32,7 +32,7 @@ export const DASHBOARD_TABS: {
     { id: 'profile', label: 'Profile', href: '/agent/profile', icon: <User size={20} /> },
   ],
   customer: [
-    { id: 'history', label: 'History', href: '/customer/history', icon: <History size={20} /> },
+    { id: 'history', label: 'History', href: '/customer', icon: <History size={20} /> },
     { id: 'book', label: 'Book Parcel', href: '/customer/book', icon: <BookMarked size={20} /> },
     { id: 'track', label: 'Track', href: '/customer/track', icon: <Search size={20} /> },
     { id: 'profile', label: 'Profile', href: '/customer/profile', icon: <User size={20} /> },

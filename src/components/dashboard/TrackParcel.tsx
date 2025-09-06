@@ -207,13 +207,14 @@ export default function TrackParcel({ initialParcelId }: { initialParcelId: stri
               <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
                 {liveLocation ? 'Live Location' : 'Last Known Location'}
               </h3>
-              <div className="rounded-lg overflow-hidden shadow-md">
+              <div className="rounded-lg overflow-hidden shadow-md"> 
                 <LeafletMap
                   currentPosition={liveLocation}
                   popupInfo={{
                     status: trackingInfo.status,
                     agent: trackingInfo.assignedAgent,
                   }}
+                  
                 />
               </div>
             </div>

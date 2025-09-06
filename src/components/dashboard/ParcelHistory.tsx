@@ -18,6 +18,7 @@ export default function ParcelHistory({ onTrackClick }: ParcelHistoryProps) {
   const { parcels, loading, error } = useSelector((state: RootState) => state.parcels);
   const [selectedParcel, setSelectedParcel] = useState<Parcel | null>(null);
   const [invoiceParcel, setInvoiceParcel] = useState<Parcel | null>(null);
+  const { user } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     dispatch(fetchParcels());
@@ -117,7 +118,11 @@ export default function ParcelHistory({ onTrackClick }: ParcelHistoryProps) {
         <ParcelDetailsModal parcel={selectedParcel} onClose={() => setSelectedParcel(null)} />
       )}
       {invoiceParcel && (
-        <InvoiceModal parcel={invoiceParcel} onClose={() => setInvoiceParcel(null)} />
+        <InvoiceModal
+          parcel={invoiceParcel}
+          onClose={() => setInvoiceParcel(null)}
+          userRole={user?.role as 'admin' | 'agent' | 'customer'}
+        />
       )}
     </>
   );

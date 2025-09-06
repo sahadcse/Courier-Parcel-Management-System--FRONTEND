@@ -49,7 +49,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             ))}
           </nav>
 
-          <main>
+          <main className="relative z-0">
             <ClientOnly>
               <SocketProvider>{children}</SocketProvider>
             </ClientOnly>
