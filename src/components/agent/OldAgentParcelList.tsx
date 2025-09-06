@@ -13,7 +13,7 @@ import ParcelDetailsModal from '../dashboard/ParcelDetailsModal';
 import InvoiceModal from '../dashboard/InvoiceModal';
 import QRScanner from './QRScanner';
 import { useClientTranslation } from '@/hooks/useClientTranslation';
-// import  AgentTab  from '@/app/(dashboard)/agent/page';
+import Link from 'next/link';
 
 interface AgentParcelListProps {
   parcels: Parcel[];
@@ -97,16 +97,31 @@ export default function AgentParcelList({ parcels }: AgentParcelListProps) {
       <div className="space-y-6">
         {/* Action Header */}
         <div className="flex flex-col sm:flex-row justify-between  p-2 rounded-lg gap-4">
-          <h2 className="text-xl font-semibold">{t('active_deliveries')}</h2>
-          <div className="flex flex-col md:flex-row gap-2">
-            <button onClick={() => activeTab} disabled={!isRouteAvailable} className="bg-blue-600 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-700 disabled:opacity-50 transition-colors">
-              {t('view_optimized_route')}
-            </button>
-            <button onClick={() => setIsScannerOpen(true)} disabled={isScanButtonDisabled} className="bg-green-600 text-white px-5 py-2 rounded-lg shadow hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed">
-              {scanButtonText}
-            </button>
-          </div>
-        </div>
+      <h2 className="text-xl font-semibold">{t('active_deliveries')}</h2>
+      <div className="flex flex-col md:flex-row gap-2">
+        <Link
+          href="/agent/route"
+          className={`bg-blue-600 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-700 transition-colors ${
+            !isRouteAvailable
+              ? 'opacity-50 pointer-events-none'
+              : ''
+          }`}
+          aria-disabled={!isRouteAvailable}
+          onClick={e => {
+            if (!isRouteAvailable) e.preventDefault();
+          }} // Prevent click if disabled
+        >
+          {t('view_optimized_route')}
+        </Link>
+        <button
+          onClick={() => setIsScannerOpen(true)}
+          disabled={isScanButtonDisabled}
+          className="bg-green-600 text-white px-5 py-2 rounded-lg shadow hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+        >
+          {scanButtonText}
+        </button>
+      </div>
+    </div>
 
         {/* Permission & Tracking Alerts */}
         {activeParcelForTracking && locationPermission !== 'granted' && (

@@ -1,37 +1,40 @@
 // src/config/dashboard.config.tsx
+// Implement folder based routing for dashboard tabs
 
 import { ShieldCheck, MapPinned, History, User, LineChart, Package, UserPlus, BookMarked, Search } from 'lucide-react';
-import { Tab as NavTab } from '@/components/common/BottomNavigation';
 
-// Define the tab IDs for each role
-export type AdminTab = 'reports' | 'parcels' | 'register_admin' | 'users' | 'live_monitor' | 'profile';
-export type AgentTab = 'active' | 'route' | 'history' | 'profile';
-export type CustomerTab = 'history' | 'book' | 'track' | 'profile';
+// The generic Tab type is now simplified
+export interface NavTab {
+  id: string;
+  label: string;
+  href: string;
+  icon: React.ReactNode;
+}
 
-// Map each role to its specific navigation tabs
+// Define tabs for each user role
 export const DASHBOARD_TABS: {
-  admin: NavTab<AdminTab>[];
-  agent: NavTab<AgentTab>[];
-  customer: NavTab<CustomerTab>[];
+  admin: NavTab[];
+  agent: NavTab[];
+  customer: NavTab[];
 } = {
   admin: [
-    { id: 'reports', label: 'Reports', icon: <LineChart size={20} /> },
-    { id: 'parcels', label: 'Parcels', icon: <Package size={20} /> },
-    { id: 'live_monitor', label: 'Live Monitor', icon: <MapPinned size={20} /> },
-    { id: 'users', label: 'Users', icon: <User size={20} /> },
-    { id: 'register_admin', label: 'New Admin', icon: <UserPlus size={20} /> },
-    { id: 'profile', label: 'Profile', icon: <User size={20} /> },
+    { id: 'reports', label: 'Reports', href: '/admin/reports', icon: <LineChart size={20} /> },
+    { id: 'parcels', label: 'Parcels', href: '/admin/parcels', icon: <Package size={20} /> },
+    { id: 'live_monitor', label: 'Live Monitor', href: '/admin/live_monitor', icon: <MapPinned size={20} /> },
+    { id: 'users', label: 'Users', href: '/admin/users', icon: <User size={20} /> },
+    { id: 'register_admin', label: 'New Admin', href: '/admin/register_admin', icon: <UserPlus size={20} /> },
+    { id: 'profile', label: 'Profile', href: '/admin/profile', icon: <User size={20} /> },
   ],
   agent: [
-    { id: 'active', label: 'Active', icon: <ShieldCheck size={20} /> },
-    { id: 'route', label: 'Route View', icon: <MapPinned size={20} /> },
-    { id: 'history', label: 'History', icon: <History size={20} /> },
-    { id: 'profile', label: 'Profile', icon: <User size={20} /> },
+    { id: 'active', label: 'Active', href: '/agent', icon: <ShieldCheck size={20} /> },
+    { id: 'route', label: 'Route View', href: '/agent/route', icon: <MapPinned size={20} /> },
+    { id: 'history', label: 'History', href: '/agent/history', icon: <History size={20} /> },
+    { id: 'profile', label: 'Profile', href: '/agent/profile', icon: <User size={20} /> },
   ],
   customer: [
-    { id: 'history', label: 'History', icon: <History size={20} /> },
-    { id: 'book', label: 'Book Parcel', icon: <BookMarked size={20} /> },
-    { id: 'track', label: 'Track', icon: <Search size={20} /> },
-    { id: 'profile', label: 'Profile', icon: <User size={20} /> },
+    { id: 'history', label: 'History', href: '/customer/history', icon: <History size={20} /> },
+    { id: 'book', label: 'Book Parcel', href: '/customer/book', icon: <BookMarked size={20} /> },
+    { id: 'track', label: 'Track', href: '/customer/track', icon: <Search size={20} /> },
+    { id: 'profile', label: 'Profile', href: '/customer/profile', icon: <User size={20} /> },
   ],
 };
