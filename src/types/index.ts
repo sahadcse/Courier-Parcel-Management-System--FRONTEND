@@ -6,6 +6,7 @@ export interface LoginInput {
   password?: string;
 }
 
+
 // Based on #/components/schemas/RegisterInput
 export interface RegisterInput {
   customerName?: string;

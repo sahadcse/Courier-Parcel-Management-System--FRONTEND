@@ -1,6 +1,5 @@
 'use client';
 
-import { Parcel } from '@/types';
 import { QRCodeSVG } from 'qrcode.react';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';

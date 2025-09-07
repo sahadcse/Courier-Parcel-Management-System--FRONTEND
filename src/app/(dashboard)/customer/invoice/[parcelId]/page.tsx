@@ -2,12 +2,11 @@
 
 import FullInvoice from '@/components/common/FullInvoice';
 
-
-// --- Main Invoice Page Component ---
 export default function InvoicePage() {
+
     return (
-        <div className=''>
+        <section className='mb-18 md:mb-0'>
             <FullInvoice />
-        </div>
+        </section>
     );
 }

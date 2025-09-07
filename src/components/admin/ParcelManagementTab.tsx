@@ -28,10 +28,12 @@ const ParcelCardSkeleton = () => (
   </div>
 );
 
+
 export default function ParcelManagementTab() {
   const dispatch = useDispatch<AppDispatch>();
   const { parcels, loading: parcelsLoading } = useSelector((state: RootState) => state.parcels);
   const { users, loading: usersLoading } = useSelector((state: RootState) => state.admin);
+  const { user } = useSelector((state: RootState) => state.auth);
   
   const [selectedParcel, setSelectedParcel] = useState<Parcel | null>(null);
   // --- FIX #1: Re-introduce the state for the invoice modal ---
@@ -178,7 +180,7 @@ export default function ParcelManagementTab() {
 
       {/* --- FIX #3: Render the InvoiceModal when its state is set --- */}
       {invoiceParcel && (
-        <InvoiceModal parcel={invoiceParcel} onClose={() => setInvoiceParcel(null)} />
+        <InvoiceModal parcel={invoiceParcel} onClose={() => setInvoiceParcel(null)} userRole={user?.role as 'admin' | 'agent' | 'customer'} />
       )}
     </section>
   );

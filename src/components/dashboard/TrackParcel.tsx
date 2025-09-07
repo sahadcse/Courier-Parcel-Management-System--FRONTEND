@@ -102,19 +102,19 @@ export default function TrackParcel({ initialParcelId }: { initialParcelId: stri
       <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">
         Track Your Parcel
       </h2>
-      <div className="flex gap-2 mb-4">
+      <div className="md:flex gap-2 mb-4">
         <input
           value={parcelIdInput}
           onChange={e => setParcelIdInput(e.target.value)}
           onKeyPress={handleKeyPress}
           placeholder="Enter Tracking ID"
-          className="flex-grow p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+          className="flex-grow py-1.5 px-4  border rounded-lg text-black border-black dark:text-gray-600 dark:bg-black focus:outline-none focus:ring-2 focus:ring-primary-500 w-full md:w-2/4 disabled:cursor-not-allowed transition"
           disabled
         />
         <button
           onClick={handleTrack}
           disabled={loading || !parcelIdInput.trim()}
-          className="bg-secondary-500 text-white px-6 py-3 rounded-lg hover:bg-secondary-700 disabled:opacity-50"
+          className="mt-2 md:mt-0 py-1.5 px-4 text-black border border-black rounded-lg dark:text-white dark:bg-black font-semibold hover:bg-gray-100 hover:text-gray-800 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition w-full md:w-1/4 text-center"
         >
           {loading ? 'Tracking...' : 'Track'}
         </button>

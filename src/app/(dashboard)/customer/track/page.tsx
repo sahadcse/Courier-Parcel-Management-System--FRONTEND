@@ -8,7 +8,7 @@ export default function TrackPage() {
   const initialParcelId = searchParams.get('id');
 
   return (
-    <div className="pb-20 sm:pb-0">
+    <div className="">
       <TrackParcel initialParcelId={initialParcelId} />
     </div>
   );

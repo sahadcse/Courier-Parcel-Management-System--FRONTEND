@@ -7,16 +7,18 @@ import { registerAdmin as registerAdminApi, registerAgent as registerAgentApi } 
 import { RegisterAdminInput } from '@/types';
 import { User } from './adminSlice';
 
+export interface AuthUser {
+  _id: string | null;
+  customerName: string | null;
+  email: string | null;
+  role: 'admin' | 'agent' | 'customer' | null;
+  isActive?: boolean;
+  address: string | null;
+  phone: string | null;
+}
+
 interface AuthState {
-  user: {
-    _id: string | null;
-    customerName: string | null;
-    email: string | null;
-    role: 'admin' | 'agent' | 'customer' | null;
-    isActive?: boolean;
-    address: string | null;
-    phone: string | null;
-  };
+  user: AuthUser;
   isAuthenticated: boolean;
   loading: 'idle' | 'pending' | 'succeeded' | 'failed';
   error: string | null;
@@ -129,14 +131,15 @@ const authSlice = createSlice({
       // Check if the update is for the currently logged-in user
       if (state.user && state.user._id === action.payload._id) {
         state.user.isActive = action.payload.isActive;
-        // Also update the copy in localStorage
-        const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-        const updatedUser = { ...storedUser, isActive: action.payload.isActive };
-        localStorage.setItem('user', JSON.stringify(updatedUser));
+        if (typeof window !== 'undefined') {
+          const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+          const updatedUser = { ...storedUser, isActive: action.payload.isActive };
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+        }
       }
     },
-    setUser: (state, action: PayloadAction<User>) => {
-      state.user = action.payload; // Just set the whole user object
+    setUser: (state, action: PayloadAction<AuthUser>) => {
+      state.user = action.payload;
       state.isAuthenticated = true;
     },
   },
@@ -152,7 +155,9 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         state.user = action.payload.user;
         state.loading = 'succeeded';
-        localStorage.setItem('user', JSON.stringify(action.payload.user));
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('user', JSON.stringify(action.payload.user));
+        }
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = 'failed';
