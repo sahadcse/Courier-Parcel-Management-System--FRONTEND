@@ -45,10 +45,10 @@ export default function Header() {
             <Link href="#" className="hover:text-white">PRICING</Link>
           </div>
           <div className="flex items-center gap-4 sm:gap-6">
-            <a href="tel:+8801746669174" className="flex items-center gap-2 hover:text-white">
+            <Link href="tel:+8801746669174" className="flex items-center gap-2 hover:text-white">
               <Phone size={14} />
               <span className="hidden md:inline">CALL US NOW: </span><span className='text-yellow-400'>+880 1746669174</span>
-            </a>
+            </Link>
             <Link href="/login" className="rounded bg-yellow-500 px-4 py-1.5 font-bold text-slate-900 transition-colors hover:bg-yellow-400">
               SIGN IN
             </Link>
@@ -75,7 +75,9 @@ export default function Header() {
           </div>
           {/* Hamburger Menu Button */}
           <div className="md:hidden">
-            <button onClick={() => setIsMenuOpen(true)} className="text-white">
+            <button onClick={() => setIsMenuOpen(true)} className={`text-black ${
+        hasScrolled ? ' text-white' : 'bg-transparent'
+      }`}>
               <Menu size={24} />
             </button>
           </div>

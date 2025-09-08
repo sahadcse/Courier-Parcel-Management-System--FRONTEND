@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { Facebook, Twitter, Linkedin, Github } from 'lucide-react';
+import Link from "next/link";
 
 
 export default function Footer() {
@@ -15,17 +16,17 @@ export default function Footer() {
                 <div>
                     <h4 className="font-semibold text-white">QUICK LINKS</h4>
                     <ul className="mt-4 space-y-2 text-sm">
-                        <li><a href="#" className="hover:text-yellow-500">About Us</a></li>
-                        <li><a href="#" className="hover:text-yellow-500">Services</a></li>
-                        <li><a href="#" className="hover:text-yellow-500">Contact</a></li>
+                        <li><Link href="www.github.com/sahadcse" className="hover:text-yellow-500">About Us</Link></li>
+                        <li><Link href="www.linkedin.com/in/sahadcse" className="hover:text-yellow-500">Services</Link></li>
+                        <li><Link href="www.linkedin.com/in/sahadcse" className="hover:text-yellow-500">Contact</Link></li>
                     </ul>
                 </div>
                  <div>
                     <h4 className="font-semibold text-white">SERVICES</h4>
                     <ul className="mt-4 space-y-2 text-sm">
-                        <li><a href="#" className="hover:text-yellow-500">Local Delivery</a></li>
-                        <li><a href="#" className="hover:text-yellow-500">International Shipping</a></li>
-                        <li><a href="#" className="hover:text-yellow-500">Freight</a></li>
+                        <li><Link href="#" className="hover:text-yellow-500">Local Delivery</Link></li>
+                        <li><Link href="#" className="hover:text-yellow-500">International Shipping</Link></li>
+                        <li><Link href="#" className="hover:text-yellow-500">Freight</Link></li>
                     </ul>
                 </div>
                  <div className="flex flex-col items-center justify-center space-y-8 text-center md:items-start md:text-left">
@@ -33,19 +34,19 @@ export default function Footer() {
                     
                     {/* Social Media Icons */}
                     <div className="flex justify-center gap-4 md:justify-start">
-                        <a href="#" aria-label="Facebook" className="flex h-12 w-12 items-center justify-center rounded-full border border-gray-600 text-gray-400 transition-colors hover:border-yellow-500 hover:text-yellow-500">
+                        <Link href="#" aria-label="Facebook" className="flex h-12 w-12 items-center justify-center rounded-full border border-gray-600 text-gray-400 transition-colors hover:border-yellow-500 hover:text-yellow-500">
                             <Facebook size={24} />
-                        </a>
-                        <a href="#" aria-label="Twitter" className="flex h-12 w-12 items-center justify-center rounded-full border border-gray-600 text-gray-400 transition-colors hover:border-yellow-500 hover:text-yellow-500">
+                        </Link>
+                        <Link href="#" aria-label="Twitter" className="flex h-12 w-12 items-center justify-center rounded-full border border-gray-600 text-gray-400 transition-colors hover:border-yellow-500 hover:text-yellow-500">
                             <Twitter size={24} />
-                        </a>
-                        {/* Using Github as a placeholder for Google+ since Lucide doesn't have a direct G+ icon */}
-                        <a href="#" aria-label="Google Plus" className="flex h-12 w-12 items-center justify-center rounded-full border border-gray-600 text-gray-400 transition-colors hover:border-yellow-500 hover:text-yellow-500">
+                        </Link>
+                        {/* Using Github as Link placeholder for Google+ since Lucide doesn't have Link direct G+ icon */}
+                        <Link href="#" aria-label="Google Plus" className="flex h-12 w-12 items-center justify-center rounded-full border border-gray-600 text-gray-400 transition-colors hover:border-yellow-500 hover:text-yellow-500">
                             <Github size={24} /> {/* Placeholder for G+ */}
-                        </a>
-                        <a href="#" aria-label="LinkedIn" className="flex h-12 w-12 items-center justify-center rounded-full border border-gray-600 text-gray-400 transition-colors hover:border-yellow-500 hover:text-yellow-500">
+                        </Link>
+                        <Link href="#" aria-label="LinkedIn" className="flex h-12 w-12 items-center justify-center rounded-full border border-gray-600 text-gray-400 transition-colors hover:border-yellow-500 hover:text-yellow-500">
                             <Linkedin size={24} />
-                        </a>
+                        </Link>
                     </div>
 
                     {/* Payment Logos */}

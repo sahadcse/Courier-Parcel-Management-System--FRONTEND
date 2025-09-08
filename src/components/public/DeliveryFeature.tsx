@@ -21,7 +21,7 @@ export default function DeliveryFeature() {
                         ))}
                     </ul>
                 </div>
-                <span className="border-4 border-gray-200 mt-28 md:mt-0 min-h-[45%] min-w-[30%] md:min-h-[45%] md:min-w-[30%]  absolute right-[30%]"></span>
+                <span className="border-4 border-gray-200 dark:border-gray-400 mt-28 md:mt-0 min-h-[45%] min-w-[30%] md:min-h-[45%] md:min-w-[30%]  absolute right-[30%]"></span>
                 <div className="z-10">
                      <Image
                         src="/img/DeliveryPersonRunning.png"
