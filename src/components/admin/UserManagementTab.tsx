@@ -27,7 +27,7 @@ const ToggleSwitch = ({ enabled, onChange }: { enabled: boolean, onChange: () =>
 );
 
 
-// --- REDESIGNED UserCard Component ---
+// --- UserCard Component ---
 const UserCard = ({ user, onStatusToggle, onViewDetails }: {
   user: User;
   onStatusToggle?: (id: string, status: boolean) => void;
