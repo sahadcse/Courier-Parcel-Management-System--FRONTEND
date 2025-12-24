@@ -1,9 +1,10 @@
+// src/components/common/FullInvoice.tsx
 'use client';
 
 import { QRCodeSVG } from 'qrcode.react';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Printer, Loader2, FileWarning } from 'lucide-react';
+import { Printer, Loader2, FileWarning, ArrowLeft, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/lib/store';
@@ -12,14 +13,14 @@ import { fetchParcels } from '@/lib/parcelSlice';
 
 // --- Full Invoice Component ---
 export default function FullInvoice() {
-  const params = useParams();
+    const params = useParams();
     const router = useRouter();
     const parcelId = params.parcelId as string;
     const dispatch = useDispatch<AppDispatch>();
 
     const { parcels, loading } = useSelector((state: RootState) => state.parcels);
     const parcel = parcels.find(p => p.parcelId === parcelId);
-    
+
     const [qrCodeUrl, setQrCodeUrl] = useState('');
     const [isMounted, setIsMounted] = useState(false);
 
@@ -43,14 +44,13 @@ export default function FullInvoice() {
         };
 
     }, [dispatch, parcels.length, parcelId, router]);
-    
+
     // Return null on the server and on the first client render to prevent hydration errors.
     if (!isMounted) {
         return null;
     }
 
     // --- Pricing Calculation ---
-    // This is moved up to be accessible by the success render logic
     const getPrice = (size: string) => {
         switch (size) {
             case 'small': return 80;
@@ -70,148 +70,181 @@ export default function FullInvoice() {
 
     // --- FIX: All rendering logic is now inside a single portal ---
     return createPortal(
-        <section>
+        <section className="font-sans antialiased text-gray-900 bg-gray-100 dark:bg-gray-950 min-h-screen fixed inset-0 z-50 overflow-auto flex items-center justify-center p-4 print:p-0 print:bg-white print:static print:block">
             {/* Loading State */}
             {(loading === 'pending' && parcels.length === 0) && (
-                <div className="fixed inset-0 z-50 flex h-screen flex-col items-center justify-center gap-4 bg-gray-50 text-gray-500 dark:bg-gray-900">
-                    <Loader2 className="h-10 w-10 animate-spin text-primary-500" />
-                    <p className="font-semibold">Loading Invoice...</p>
+                <div className="flex flex-col items-center justify-center gap-4">
+                    <Loader2 className="h-12 w-12 animate-spin text-primary-600" />
+                    <p className="font-semibold text-lg text-gray-600 dark:text-gray-400">Retrieving Invoice Details...</p>
                 </div>
             )}
 
             {/* Not Found State */}
             {(loading !== 'pending' && !parcel) && (
-                <div className="fixed inset-0 z-50 flex h-screen flex-col items-center justify-center gap-4 bg-gray-50 text-center p-4 dark:bg-gray-900">
-                    <FileWarning className="h-12 w-12 text-red-500" />
-                    <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Invoice Not Found</h1>
-                    <p className="text-gray-600 dark:text-gray-400">The parcel with ID <span className="font-mono bg-gray-200 dark:bg-gray-700 p-1 rounded-md">{parcelId}</span> could not be found.</p>
-                    <Link href="/admin?tab=parcels" className="mt-4 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-lg hover:bg-primary-700">
-                        Back to Dashboard
-                    </Link>
+                <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-xl text-center max-w-md w-full border border-gray-100 dark:border-gray-800">
+                    <div className="w-16 h-16 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4 text-red-500">
+                        <FileWarning size={32} />
+                    </div>
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Invoice Not Found</h1>
+                    <p className="text-gray-500 dark:text-gray-400 mb-6">
+                        We couldn't locate an invoice for ID <span className="font-mono bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded text-gray-800 dark:text-gray-200 font-bold">{parcelId}</span>.
+                    </p>
+                    <button onClick={() => router.back()} className="w-full py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold hover:opacity-90 transition-all flex items-center justify-center gap-2">
+                        <ArrowLeft size={18} /> Go Back
+                    </button>
                 </div>
             )}
 
             {/* Success State (Invoice Content) */}
             {parcel && (
-                <div className="fixed inset-0 z-40 overflow-y-auto bg-gray-100 dark:bg-gray-950 font-sans invoice-portal">
-                    <style jsx global>{`
-                        @media print {
-                            .no-print { display: none !important; }
-                            body > div:not(.invoice-portal) { display: none !important; }
-                            .invoice-portal {
-                                position: static !important;
-                                overflow: visible !important;
-                            }
-                            #invoice-page { padding: 0 !important; }
-                            #invoice-content { 
-                                box-shadow: none !important; border: none !important; margin: 0 !important; 
-                                max-width: 100% !important; border-radius: 0 !important;
-                            }
-                        }
-                        @page { size: A4; margin: 0.5in; }
-                    `}</style>
-                    
-                    <div className="no-print fixed bottom-18 md:bottom-8 right-8 z-50">
-                        <button onClick={() => window.print()} className="flex items-center justify-center rounded-full bg-primary-600 p-4 text-white bg-black shadow-lg hover:bg-primary-700 transition-transform hover:scale-110">
-                            <Printer size={24} />
+                <>
+                    {/* Print & Action Controls (Hidden when printing) */}
+                    <div className="print:hidden fixed top-4 right-4 md:right-8 flex gap-3 z-50">
+                        <button
+                            onClick={() => window.print()}
+                            className="flex items-center gap-2 bg-primary-600 text-white dark:bg-primary-500 px-6 py-3 rounded-full font-bold shadow-lg hover:shadow-primary-500/30 hover:-translate-y-0.5 transition-all"
+                        >
+                            <Printer size={18} /> Print Invoice
+                        </button>
+                        <button
+                            onClick={() => router.back()}
+                            className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 p-3 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
+                        >
+                            <ArrowLeft size={20} />
                         </button>
                     </div>
 
-                    <main id="invoice-page" className="p-4 sm:p-8">
-                      <div id="invoice-content" className="max-w-4xl mx-auto bg-white rounded-lg shadow-2xl dark:bg-gray-900 border dark:border-gray-800 flex">
-                        <div className="hidden sm:flex w-12 items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-l-lg">
-                            <h1 className="text-xl font-bold text-gray-400 dark:text-gray-500 transform -rotate-90 whitespace-nowrap tracking-wider">
-                                INVOICE #{parcel.parcelId.slice(-6)}
-                            </h1>
-                        </div>
-                        <div className="p-8 sm:p-10 w-full">
-                            <header className="flex flex-col sm:flex-row justify-between items-start pb-6 mb-6">
+                    <style jsx global>{`
+                        @media print {
+                            @page { size: A4; margin: 0; }
+                            body { background: white; -webkit-print-color-adjust: exact; }
+                            .print\\:hidden { display: none !important; }
+                            .invoice-container { box-shadow: none !important; margin: 0 !important; width: 100% !important; max-width: none !important; border: none !important; border-radius: 0 !important; }
+                        }
+                    `}</style>
+
+                    <main className="invoice-container bg-white w-full max-w-[210mm] min-h-[297mm] mx-auto shadow-2xl rounded-none md:rounded-lg overflow-hidden relative">
+                        {/* Top Decorative Bar */}
+                        <div className="h-2 w-full bg-gradient-to-r from-primary-600 via-indigo-600 to-primary-600"></div>
+
+                        <div className="p-12 md:p-16">
+                            {/* Header */}
+                            <header className="flex justify-between items-start mb-16">
                                 <div>
-                                    <h2 className="text-2xl font-bold text-primary-600 dark:text-primary-400">ProCourier</h2>
-                                    <p className="text-sm text-gray-500">123 Business Avenue, Dhaka</p>
-                                    <p className="text-sm text-gray-500">support@procourier.com</p>
-                                    <p className="text-sm text-gray-500">+880 123 456 7890</p>
+                                    <h1 className="text-4xl font-bold text-gray-900 tracking-tight mb-1">INVOICE</h1>
+                                    <p className="text-gray-500 font-mono text-sm uppercase tracking-widest">#{parcel.parcelId}</p>
                                 </div>
-                                <div className="mt-4 sm:mt-0 flex-shrink-0">
-                                    <div className="w-24 h-24 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center p-2">
-                                       {qrCodeUrl && <QRCodeSVG value={qrCodeUrl} size={80} bgColor="transparent" fgColor={typeof window !== 'undefined' && document.body.classList.contains('dark') ? '#FFFFFF' : '#000000'} />}
+                                <div className="text-right">
+                                    <h2 className="text-2xl font-bold text-primary-600 tracking-tight flex items-center justify-end gap-2">
+                                        Logistics<span className="text-gray-900">Pro</span>
+                                    </h2>
+                                    <div className="text-gray-500 text-sm mt-2 space-y-1">
+                                        <p>123 Logistics Way, Dhaka, Bangladesh</p>
+                                        <p>support@logisticspro.com</p>
+                                        <p>+880 123 456 7890</p>
                                     </div>
                                 </div>
                             </header>
-                            <section className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8 text-sm">
-                                <div className="sm:col-span-1">
-                                    <h3 className="font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 border-b dark:border-gray-700 pb-1">Bill To</h3>
-                                    <p className="font-bold text-gray-800 dark:text-white">{parcel.receiverName}</p>
-                                    <p className="text-gray-600 dark:text-gray-300">{parcel.deliveryAddress}</p>
-                                    <p className="text-gray-600 dark:text-gray-300">{parcel.receiverNumber}</p>
+
+                            {/* Info Grid */}
+                            <div className="grid grid-cols-2 gap-12 mb-16">
+                                <div>
+                                    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Billed To</h3>
+                                    <div className="text-gray-900">
+                                        <p className="font-bold text-lg mb-1">{parcel.receiverName}</p>
+                                        <p className="text-gray-600 max-w-xs leading-relaxed">{parcel.deliveryAddress}</p>
+                                        <p className="text-gray-600 mt-2">{parcel.receiverNumber}</p>
+                                    </div>
                                 </div>
-                                 <div className="sm:col-span-1">
-                                    <h3 className="font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 border-b dark:border-gray-700 pb-1">Location</h3>
-                                    <p className="font-bold text-gray-800 dark:text-white">From:</p>
-                                    <p className="text-gray-600 dark:text-gray-300">{parcel.pickupAddress}</p>
+                                <div className="flex justify-end">
+                                    <div className="text-right">
+                                        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Invoice Details</h3>
+                                        <div className="space-y-2">
+                                            <div className="flex justify-end gap-8">
+                                                <span className="text-gray-500">Date Issued:</span>
+                                                <span className="font-semibold text-gray-900">{new Date(parcel.createdAt).toLocaleDateString()}</span>
+                                            </div>
+                                            <div className="flex justify-end gap-8">
+                                                <span className="text-gray-500">Due Date:</span>
+                                                <span className="font-semibold text-gray-900">{new Date(parcel.createdAt).toLocaleDateString()}</span>
+                                            </div>
+                                            <div className="flex justify-end gap-8">
+                                                <span className="text-gray-500">Service Type:</span>
+                                                <span className="font-semibold text-gray-900 capitalize">{parcel.parcelSize} Package</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="sm:col-span-1 text-left sm:text-right">
-                                     <h3 className="font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 border-b dark:border-gray-700 pb-1">Details</h3>
-                                     <p className="text-gray-600 dark:text-gray-300">Invoice Date: <span className="font-medium text-gray-800 dark:text-white">{new Date(parcel.createdAt).toLocaleDateString()}</span></p>
-                                     <p className="text-gray-600 dark:text-gray-300">Due Date: <span className="font-medium text-gray-800 dark:text-white">{new Date(parcel.createdAt).toLocaleDateString()}</span></p>
-                                </div>
-                            </section>
-                            <section className="mb-8">
-                                <table className="w-full text-left">
+                            </div>
+
+                            {/* Line Items Table */}
+                            <div className="mb-12">
+                                <table className="w-full">
                                     <thead>
-                                        <tr className="bg-primary-600 text-white text-sm">
-                                            <th className="p-3 font-semibold rounded-l-lg">Description</th>
-                                            <th className="p-3 font-semibold text-center">QTY</th>
-                                            <th className="p-3 font-semibold text-right">Unit Price</th>
-                                            <th className="p-3 font-semibold text-right rounded-r-lg">Total</th>
+                                        <tr className="border-b-2 border-primary-600">
+                                            <th className="py-4 text-left font-bold text-gray-900 uppercase text-xs tracking-wider w-1/2">Description</th>
+                                            <th className="py-4 text-center font-bold text-gray-900 uppercase text-xs tracking-wider">Qty</th>
+                                            <th className="py-4 text-right font-bold text-gray-900 uppercase text-xs tracking-wider">Price</th>
+                                            <th className="py-4 text-right font-bold text-gray-900 uppercase text-xs tracking-wider">Total</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="text-sm">
-                                        <tr className="border-b dark:border-gray-700">
-                                            <td className="p-3 text-gray-800 dark:text-gray-200">Delivery Charge ({parcel.parcelSize})</td>
-                                            <td className="p-3 text-center text-gray-600 dark:text-gray-400">1</td>
-                                            <td className="p-3 text-right text-gray-600 dark:text-gray-400">{deliveryCharge.toFixed(2)}</td>
-                                            <td className="p-3 text-right text-gray-800 dark:text-gray-200">{deliveryCharge.toFixed(2)} BDT</td>
+                                    <tbody className="divide-y divide-gray-100">
+                                        <tr>
+                                            <td className="py-6">
+                                                <p className="font-bold text-gray-900">Delivery Charge</p>
+                                                <p className="text-sm text-gray-500 mt-1">Standard shipping for {parcel.parcelSize} sized parcel</p>
+                                            </td>
+                                            <td className="py-6 text-center text-gray-600">1</td>
+                                            <td className="py-6 text-right text-gray-600">{deliveryCharge.toFixed(2)}</td>
+                                            <td className="py-6 text-right font-semibold text-gray-900">{deliveryCharge.toFixed(2)}</td>
                                         </tr>
                                         {parcel.paymentType === 'COD' && (
-                                            <tr className="border-b dark:border-gray-700">
-                                                <td className="p-3 text-gray-800 dark:text-gray-200">Cash on Delivery Collection</td>
-                                                <td className="p-3 text-center text-gray-600 dark:text-gray-400">1</td>
-                                                <td className="p-3 text-right text-gray-600 dark:text-gray-400">{codAmount.toFixed(2)}</td>
-                                                <td className="p-3 text-right text-gray-800 dark:text-gray-200">{codAmount.toFixed(2)} BDT</td>
+                                            <tr>
+                                                <td className="py-6">
+                                                    <p className="font-bold text-gray-900">COD Collection</p>
+                                                    <p className="text-sm text-gray-500 mt-1">Cash on Delivery amount to be collected</p>
+                                                </td>
+                                                <td className="py-6 text-center text-gray-600">1</td>
+                                                <td className="py-6 text-right text-gray-600">{codAmount.toFixed(2)}</td>
+                                                <td className="py-6 text-right font-semibold text-gray-900">{codAmount.toFixed(2)}</td>
                                             </tr>
                                         )}
                                     </tbody>
                                 </table>
-                            </section>
-                            <footer className="flex justify-between items-start pt-6 border-t dark:border-gray-700">
-                                <div className="text-sm text-gray-500">
-                                    <h4 className="font-semibold mb-1">Terms & Instructions</h4>
-                                    <p>Payment is due within 15 days.</p>
-                                    <p className="mt-4">Thank you for your Order!</p>
-                                </div>
-                                <div className="w-full sm:max-w-xs space-y-2 text-sm">
-                                    <div className="flex justify-between text-gray-600 dark:text-gray-300">
+                            </div>
+
+                            {/* Summary Section */}
+                            <div className="flex justify-end mb-20">
+                                <div className="w-64 space-y-3">
+                                    <div className="flex justify-between text-gray-600 text-sm">
                                         <span>Subtotal</span>
                                         <span>{subtotal.toFixed(2)} BDT</span>
                                     </div>
-                                    <div className="flex justify-between text-gray-600 dark:text-gray-300">
+                                    <div className="flex justify-between text-gray-600 text-sm">
                                         <span>Tax (0%)</span>
                                         <span>0.00 BDT</span>
                                     </div>
-                                    <div className="flex justify-between font-bold text-lg text-primary-600 dark:text-primary-400 mt-2 pt-2 border-t dark:border-gray-700">
-                                        <span>Balance Due</span>
-                                        <span>{amountDue.toFixed(2)} BDT</span>
+                                    <div className="h-px bg-gray-200 my-4"></div>
+                                    <div className="flex justify-between items-end">
+                                        <span className="font-bold text-gray-900 text-lg">Total Due</span>
+                                        <span className="font-bold text-primary-600 text-2xl">{amountDue.toFixed(2)} BDT</span>
                                     </div>
                                 </div>
-                            </footer>
-                            <p className="mt-14 text-xs text-gray-500 text-center">
-                                This is a system generated invoice and does not require a signature.
-                            </p>
+                            </div>
+
+                            {/* Footer */}
+                            <div className="flex justify-between items-end pt-8 border-t border-gray-100">
+                                <div className="text-xs text-gray-400 max-w-sm leading-relaxed">
+                                    <p className="font-bold text-gray-500 uppercase tracking-widest mb-1">Payment Instructions</p>
+                                    <p>Please ensure payment is made by the due date. Checks should be made payable to LogisticsPro Inc.</p>
+                                </div>
+                                <div className="bg-white p-2 border border-gray-100 rounded-lg">
+                                    {qrCodeUrl && <QRCodeSVG value={qrCodeUrl} size={80} />}
+                                </div>
+                            </div>
                         </div>
-                      </div>
                     </main>
-                </div>
+                </>
             )}
         </section>,
         document.body

@@ -1,130 +1,135 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, Mail, Phone } from 'lucide-react';
+import { ChevronDown, Mail, Phone, HelpCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 
 // --- FAQ Data ---
 const faqData = [
   {
     question: "How can I track my parcel?",
-    answer: "You can easily track your parcel in real-time. Simply go to our homepage or the 'Tracking' section, enter the Parcel ID provided to you at the time of booking, and you will see the current status and location of your shipment."
+    answer: "You can easily track your parcel in real-time using our 'Tracking' page. Simply enter the Parcel ID provided at booking to view the current status, location, and estimated delivery time."
   },
   {
     question: "What are your delivery service areas?",
-    answer: "We offer comprehensive delivery services across Bangladesh. Our primary hubs are in major cities like Dhaka, Chittagong, and Sylhet, allowing for next-day delivery within these zones. We also provide reliable nationwide coverage for all other districts, which may take 2-4 business days."
+    answer: "We offer comprehensive delivery services across Bangladesh with next-day delivery in major cities like Dhaka, Chittagong, and Sylhet. Our nationwide coverage ensures reliable delivery to all districts within 2-4 business days."
   },
   {
     question: "How is the shipping cost calculated?",
-    answer: "The shipping cost is calculated based on three main factors: the parcel's size (small, medium, large), its weight, and the delivery destination (inside Dhaka, Dhaka subcontinent, or nationwide). You can get an instant price estimate using the 'Quote Calculator' on our homepage."
+    answer: "Shipping costs are calculated based on parcel weight, dimensions, and delivery destination. Use our instant 'Quote Calculator' to get an accurate estimate before booking."
   },
   {
-    question: "What is Cash on Delivery (COD) and how does it work?",
-    answer: "Cash on Delivery (COD) is a payment method where the recipient pays for the goods at the time of delivery, rather than in advance. Our delivery agent collects the specified amount from the recipient, and we then transfer the funds to you, the sender, through your preferred payment method."
+    question: "What is Cash on Delivery (COD)?",
+    answer: "Cash on Delivery (COD) allows the recipient to pay for goods upon receipt. We collect the payment and transfer it securely to the sender."
   },
   {
-    question: "What should I do if my parcel is delayed or lost?",
-    answer: "While we strive for timely delivery, unforeseen circumstances can cause delays. If your parcel has not arrived within the estimated timeframe, please contact our customer support immediately with your Parcel ID. We will launch an investigation to locate your shipment and provide you with a prompt update."
-  },
-  {
-    question: "Are there any items that are prohibited from shipping?",
-    answer: "Yes, for safety and legal reasons, we cannot transport certain items. This includes illegal substances, flammable materials, explosives, currency, liquids, and other hazardous goods. Please review our detailed prohibited items list on our website before booking a parcel."
+    question: "What items are prohibited?",
+    answer: "We do not transport illegal substances, explosives, flammable materials, or hazardous goods. Please refer to our full Prohibited Items list for details."
   },
 ];
 
-
-// --- Accordion Item Component ---
-const AccordionItem = ({
-  question,
-  answer,
-  isOpen,
-  onClick,
-}: {
-  question: string;
-  answer: string;
-  isOpen: boolean;
-  onClick: () => void;
-}) => {
+const AccordionItem = ({ question, answer, isOpen, onClick, index }: { question: string, answer: string, isOpen: boolean, onClick: () => void, index: number }) => {
   return (
-    <div className="border-b border-gray-200 dark:border-gray-700">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.1 }}
+      className={`border rounded-xl mb-4 overflow-hidden transition-all duration-300 ${isOpen ? 'border-primary-500/30 bg-primary-50/50 dark:bg-slate-800/50' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'}`}
+    >
       <button
         onClick={onClick}
-        className="flex w-full items-center justify-between py-5 text-left text-lg font-semibold text-gray-800 dark:text-white"
+        className="flex w-full items-center justify-between p-5 text-left focus:outline-none"
+        aria-expanded={isOpen}
       >
-        <span className='text-md'>{question}</span>
-        <ChevronDown
-          className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
-          size={24}
-        />
+        <span className={`text-lg font-semibold transition-colors duration-300 ${isOpen ? 'text-primary-600' : 'text-slate-800 dark:text-slate-200'}`}>
+          {question}
+        </span>
+        <span className={`rounded-full p-1 transition-all duration-300 ${isOpen ? 'bg-primary-100 text-primary-600 rotate-180' : 'bg-slate-100 text-slate-500'}`}>
+          <ChevronDown size={20} />
+        </span>
       </button>
-      <div
-        className={`grid overflow-hidden transition-all duration-300 ease-in-out ${
-          isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
-        }`}
-      >
-        <div className="overflow-hidden">
-            <p className="pb-5 text-gray-600 dark:text-gray-400">{answer}</p>
-        </div>
-      </div>
-    </div>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            <div className="px-5 pb-5 text-slate-600 dark:text-slate-400 leading-relaxed">
+              {answer}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 };
 
-// --- Main FAQ Section Component ---
 export default function FaqSection() {
-  const [openQuestionIndex, setOpenQuestionIndex] = useState<number | null>(0);
-
-  const handleToggle = (index: number) => {
-    setOpenQuestionIndex(openQuestionIndex === index ? null : index);
-  };
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="bg-white dark:bg-gray-900">
-      <div className="container mx-auto max-w-4xl px-4 py-16 sm:py-24">
-        {/* Section Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white">
-            Frequently Asked Questions
-          </h2>
-          <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
-            Find answers to common questions about our services.
-          </p>
-        </div>
+    <section id="faq" className="bg-slate-50 dark:bg-slate-950 py-24 relative overflow-hidden">
+      {/* Background Decor */}
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary-500/20 to-transparent" />
 
-        {/* Accordion Container */}
-        <div className="w-full">
-          {faqData.map((faq, index) => (
-            <AccordionItem
-              key={index}
-              question={faq.question}
-              answer={faq.answer}
-              isOpen={openQuestionIndex === index}
-              onClick={() => handleToggle(index)}
-            />
-          ))}
-        </div>
+      <div className="container mx-auto px-6 max-w-[1280px]">
+        <div className="flex flex-col lg:flex-row gap-16">
+          {/* Header & Contact */}
+          <div className="lg:w-1/3 space-y-8">
+            <div className="space-y-4">
+              <span className="text-primary-600 font-bold tracking-wider uppercase text-sm">Support</span>
+              <h2 className="text-4xl font-bold text-slate-900 dark:text-white leading-tight">
+                Frequently Asked <br /> <span className="text-primary-600">Questions</span>
+              </h2>
+              <p className="text-slate-600 dark:text-slate-400 text-lg">
+                Can't find what you're looking for? We're here to help you with any inquiries.
+              </p>
+            </div>
 
-        {/* "Still Have Questions?" Section */}
-        <div className="mt-20 text-center rounded-lg bg-gray-50 dark:bg-gray-800 p-8">
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Still have questions?
-          </h3>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">
-            If you can&apos;t find the answer you&apos;re looking for, please get in touch with our support team.
-          </p>
-          <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a
-              href="tel:+8801746669174"
-              className="flex items-center justify-center gap-2 rounded-lg bg-primary-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-primary-700"
-            >
-              <Phone size={18} /> Call Us Now
-            </a>
-            <Link
-              href="/#contact"
-              className="flex items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 font-semibold text-gray-800 ring-1 ring-inset ring-gray-300 transition-colors hover:bg-gray-100 dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:hover:bg-gray-600"
-            >
-              <Mail size={18} /> Contact Support
-            </Link>
+            <div className="p-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-black/20">
+              <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+                <HelpCircle className="text-primary-500" /> Need more help?
+              </h3>
+              <div className="space-y-4">
+                <a href="tel:+8801746669174" className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-primary-50 dark:hover:bg-slate-700 transition-colors group">
+                  <div className="p-3 rounded-full bg-white dark:bg-slate-900 text-primary-600 shadow-sm group-hover:scale-110 transition-transform">
+                    <Phone size={20} />
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-500">Call anytime</p>
+                    <p className="font-bold text-slate-900 dark:text-white group-hover:text-primary-600 transition-colors">+880 174 666 9174</p>
+                  </div>
+                </a>
+
+                <a href="#contact" className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-primary-50 dark:hover:bg-slate-700 transition-colors group">
+                  <div className="p-3 rounded-full bg-white dark:bg-slate-900 text-primary-600 shadow-sm group-hover:scale-110 transition-transform">
+                    <Mail size={20} />
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-500">Email us</p>
+                    <p className="font-bold text-slate-900 dark:text-white group-hover:text-primary-600 transition-colors">support@procourier.com</p>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Accordion List */}
+          <div className="lg:w-2/3">
+            {faqData.map((faq, index) => (
+              <AccordionItem
+                key={index}
+                index={index}
+                question={faq.question}
+                answer={faq.answer}
+                isOpen={openIndex === index}
+                onClick={() => setOpenIndex(openIndex === index ? null : index)}
+              />
+            ))}
           </div>
         </div>
       </div>

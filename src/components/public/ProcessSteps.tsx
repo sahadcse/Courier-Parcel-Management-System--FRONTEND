@@ -1,57 +1,45 @@
 'use client';
 
-import Image from 'next/image';
+import { ClipboardList, Package, Truck, CheckCircle } from 'lucide-react';
 
 export default function ProcessSteps() {
   const steps = [
-    { num: 1, title: 'ORDER', description: 'Duis autem vel eum iriure hendrerit in vulputate.' },
-    { num: 2, title: 'WAIT', description: 'Duis autem vel eum iriure hendrerit in vulputate.' },
-    { num: 3, title: 'DELIVER', description: 'Duis autem vel eum iriure hendrerit in vulputate.' },
+    { num: 1, title: 'Book Order', description: 'Fill out details and schedule pickup.', icon: <ClipboardList size={32} /> },
+    { num: 2, title: 'Pack & Label', description: 'Secure packaging with generated label.', icon: <Package size={32} /> },
+    { num: 3, title: 'We Collect', description: 'Our agent picks up from your doorstep.', icon: <Truck size={32} /> },
+    { num: 4, title: 'Delivered', description: 'Safely delivered to the destination.', icon: <CheckCircle size={32} /> },
   ];
 
   return (
-    <section className="relative h-full py-12 w-full overflow-hidden bg-gray-900 text-white md:h-[300px]">
-      {/* Background City Image */}
-      <Image
-        src="https://images.unsplash.com/photo-1575380591643-b2c92368dc6d"
-        alt="City at night"
-        fill
-        quality={80}
-        className="object-cover object-center opacity-60" // Reduced opacity for text readability
-      />
-      {/* Dark Overlay for better text contrast */}
-      <div className="absolute inset-0 bg-black/50"></div>
+    <section id="process" className="py-24 bg-white dark:bg-slate-950">
+      <div className="container mx-auto px-6 max-w-[1280px]">
+        <div className="text-center mb-16">
+          <span className="text-primary-600 font-bold tracking-wider uppercase text-sm">How It Works</span>
+          <h2 className="text-4xl font-bold text-slate-900 dark:text-white mt-2">Simple 4-Step Process</h2>
+        </div>
 
-      {/* Top Yellow Bar */}
-      <div className="absolute left-0 right-0 top-0 h-0.5 max-w-[80%] mx-auto bg-yellow-500"></div>
+        <div className="relative">
+          {/* Connecting Line (Desktop) */}
+          <div className="hidden lg:block absolute top-[60px] left-0 right-0 h-1 bg-slate-100 dark:bg-slate-800 z-0">
+            <div className="h-full bg-primary-100/50 w-full"></div>
+          </div>
 
-      {/* Delivery Van Image */}
-      {/* Positioned absolutely to the right, adjusting for different screen sizes */}
-
-      <div className="absolute bottom-0 right-0 z-10 h-[150px] w-[250px] md:h-[200px] md:w-[350px] lg:h-[225px] lg:w-[400px]">
-        <Image
-          src="/img/DeliveryVanSide.png"
-          alt="Delivery Van"
-          fill
-          quality={100}
-          className=" object-right object-contain"
-        />
-      </div>
-
-      {/* Steps Content */}
-      <div className="container relative z-20 mx-auto h-full px-4">
-        <div className="grid h-full grid-cols-1 items-center gap-8 md:grid-cols-4">
-          {steps.map(step => (
-            <div key={step.num} className="z-10 text-left flex gap-3 items-center">
-              {' '}
-              {/* Added md:w-2/3 to keep text from overlapping van */}
-              <p className="text-3xl font-extrabold text-white md:text-4xl">{step.num}.</p>
-              <div>
-                <h3 className="mt-2 text-xl font-bold uppercase md:text-2xl">{step.title}</h3>
-                <p className="mt-1 text-base text-gray-400">{step.description}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 relative z-10">
+            {steps.map((step, idx) => (
+              <div key={step.num} className="group flex flex-col items-center text-center">
+                <div className="w-32 h-32 rounded-full bg-white dark:bg-slate-900 border-4 border-slate-100 dark:border-slate-800 flex items-center justify-center mb-6 shadow-xl transition-transform duration-300 group-hover:scale-110 group-hover:border-primary-500">
+                  <div className="text-primary-600">
+                    {step.icon}
+                  </div>
+                  <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-primary-600 text-white flex items-center justify-center font-bold text-sm border-4 border-white dark:border-slate-900">
+                    {step.num}
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{step.title}</h3>
+                <p className="text-slate-500 dark:text-slate-400 leading-relaxed">{step.description}</p>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </section>

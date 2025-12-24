@@ -5,17 +5,19 @@
 import api from '@/lib/api';
 
 import { useState, useEffect, useCallback } from 'react';
-import { isApiError, PublicTrackingInfo, TrackingPoint } from '@/types';
+import { isApiError, PublicTrackingInfo } from '@/types';
 import { useSocket } from '@/hooks/useRealtimeParcels';
 import dynamic from 'next/dynamic';
 import 'leaflet/dist/leaflet.css';
+import { Search, MapPin, Truck, Calendar, Clock, User, Phone, Navigation } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 // Dynamically import the map component to prevent SSR issues
 const LeafletMap = dynamic(() => import('@/components/maps/LeafletMap'), {
   ssr: false,
   loading: () => (
-    <div className="h-[400px] bg-gray-200 animate-pulse rounded-lg flex items-center justify-center">
-      Loading map...
+    <div className="h-[400px] bg-gray-100 dark:bg-gray-800 animate-pulse rounded-2xl flex items-center justify-center text-gray-400">
+      Loading map engine...
     </div>
   ),
 });
@@ -41,12 +43,9 @@ export default function TrackParcel({ initialParcelId }: { initialParcelId: stri
       const data: PublicTrackingInfo = response.data.data;
       setTrackingInfo(data);
 
-      console.log('Initial tracking data:', data);
-
       if (data.trackingHistory && data.trackingHistory.length > 0) {
         const lastKnownLocation = data.trackingHistory[data.trackingHistory.length - 1];
         setLiveLocation(lastKnownLocation.coordinates);
-        console.log('Last known location set to:', lastKnownLocation.coordinates);
       }
     } catch (err: unknown) {
       if (isApiError(err)) {
@@ -89,137 +88,143 @@ export default function TrackParcel({ initialParcelId }: { initialParcelId: stri
   };
 
   const statusStyles = {
-    Delivered: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-    'In Transit': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
-    'Picked Up': 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-300',
-    Assigned: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300',
-    Booked: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
-    Failed: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
+    Delivered: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+    'In Transit': 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+    'Picked Up': 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400',
+    Assigned: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
+    Booked: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+    Failed: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+    Default: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400',
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
-      <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">
-        Track Your Parcel
-      </h2>
-      <div className="md:flex gap-2 mb-4">
-        <input
-          value={parcelIdInput}
-          onChange={e => setParcelIdInput(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder="Enter Tracking ID"
-          className="flex-grow py-1.5 px-4  border rounded-lg text-black border-black dark:text-gray-600 dark:bg-black focus:outline-none focus:ring-2 focus:ring-primary-500 w-full md:w-2/4 disabled:cursor-not-allowed transition"
-          disabled
-        />
-        <button
-          onClick={handleTrack}
-          disabled={loading || !parcelIdInput.trim()}
-          className="mt-2 md:mt-0 py-1.5 px-4 text-black border border-black rounded-lg dark:text-white dark:bg-black font-semibold hover:bg-gray-100 hover:text-gray-800 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition w-full md:w-1/4 text-center"
-        >
-          {loading ? 'Tracking...' : 'Track'}
-        </button>
+    <div className="space-y-8">
+
+      {/* Search Header */}
+      <div className="bg-white dark:bg-gray-800 shadow-xl shadow-gray-200/50 dark:shadow-none rounded-3xl p-6 md:p-10 text-center relative overflow-hidden">
+        <div className="relative z-10 max-w-2xl mx-auto space-y-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+            Track your shipment
+          </h2>
+          <p className="text-gray-500 dark:text-gray-400 pb-2">Enter your tracking ID to see real-time updates.</p>
+
+          <div className="relative flex items-center shadow-lg rounded-2xl bg-white dark:bg-gray-900 overflow-hidden ring-1 ring-gray-100 dark:ring-gray-700 focus-within:ring-2 focus-within:ring-primary-500 transition-all">
+            <Search className="absolute left-4 text-gray-400" size={20} />
+            <input
+              value={parcelIdInput}
+              onChange={e => setParcelIdInput(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="e.g. TRK-837492..."
+              className="w-full pl-12 pr-32 py-4 bg-transparent border-none focus:ring-0 text-lg outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400"
+            />
+            <button
+              onClick={handleTrack}
+              disabled={loading || !parcelIdInput.trim()}
+              className="absolute right-2 px-6 py-2 bg-gray-900 dark:bg-white text-white dark:text-black rounded-xl font-bold hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? 'Searching...' : 'Track'}
+            </button>
+          </div>
+          {error && <p className="text-red-500 font-medium">{error}</p>}
+        </div>
+
+        {/* Background Decor */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
       </div>
 
-      {error && <div className="bg-red-100 text-red-700 p-3 rounded mb-4">{error}</div>}
-
+      {/* Results Section */}
       {trackingInfo && (
-        <div className="mt-6 border-t pt-6 dark:border-gray-700">
-          {liveLocation && (
-            <div
-              className="mb-6 bg-green-100 border-l-4 border-green-500 text-green-800 p-4 rounded-r-lg dark:bg-green-900 dark:text-green-200"
-              role="alert"
-            >
-              <p className="font-bold">📍 Live Tracking Active</p>
-              <p>This parcel&apos;s location is being updated in real-time.</p>
-            </div>
-          )}
-
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* --- Left Column: Details --- */}
-            <div className="space-y-6">
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-                  Tracking Details
-                </h3>
-                <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg space-y-3 text-sm">
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-500 dark:text-gray-400">Status</span>
-                    <span
-                      className={`px-2.5 py-1 rounded-full font-medium text-xs ${statusStyles[trackingInfo.status] || ''}`}
-                    >
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="grid lg:grid-cols-3 gap-8"
+        >
+          {/* Main Info Card */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Status Card */}
+            <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 md:p-8 border border-gray-100 dark:border-gray-700 shadow-sm">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                <div>
+                  <span className="text-sm font-bold text-gray-400 uppercase tracking-widest">Current Status</span>
+                  <div className="flex items-center gap-3 mt-1">
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{trackingInfo.status}</h3>
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${statusStyles[trackingInfo.status as keyof typeof statusStyles] || statusStyles.Default}`}>
                       {trackingInfo.status}
                     </span>
                   </div>
-                  <div className="flex items-start gap-3 border-t pt-3 dark:border-gray-600">
-                    <span className="mt-1 text-lg">🏠</span>
-                    <div>
-                      <span className="text-gray-500 dark:text-gray-400 block">Pickup Address</span>
-                      <span className="font-medium text-gray-800 dark:text-gray-200">
-                        {trackingInfo.pickupAddress}
-                      </span>
-                    </div>
+                </div>
+                <div className="flex flex-col items-end">
+                  <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Last Update</span>
+                  <span className="text-lg font-medium text-gray-700 dark:text-gray-300">
+                    {trackingInfo.trackingHistory?.length ? new Date(trackingInfo.trackingHistory[trackingInfo.trackingHistory.length - 1].timestamp).toLocaleTimeString() : 'N/A'}
+                  </span>
+                  <span className="text-sm text-gray-500">
+                    {trackingInfo.trackingHistory?.length ? new Date(trackingInfo.trackingHistory[trackingInfo.trackingHistory.length - 1].timestamp).toLocaleDateString() : 'N/A'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Timeline Visualization */}
+              <div className="relative pl-8 border-l-2 border-gray-100 dark:border-gray-700 space-y-10 my-10">
+                <div className="relative">
+                  <div className="absolute -left-[41px] top-1 p-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 rounded-full ring-4 ring-white dark:ring-gray-800 box-content">
+                    <MapPin size={20} />
                   </div>
-                  <div className="flex items-start gap-3">
-                    <span className="mt-1 text-lg">📍</span>
-                    <div>
-                      <span className="text-gray-500 dark:text-gray-400 block">
-                        Destination Address
-                      </span>
-                      <span className="font-medium text-gray-800 dark:text-gray-200">
-                        {trackingInfo.deliveryAddress}
-                      </span>
-                    </div>
+                  <div>
+                    <p className="text-xs font-bold text-gray-400 uppercase">From (Pickup)</p>
+                    <p className="text-lg font-semibold text-gray-900 dark:text-white">{trackingInfo.pickupAddress}</p>
+                  </div>
+                </div>
+
+                <div className="relative">
+                  <div className="absolute -left-[41px] top-1 p-2 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 rounded-full ring-4 ring-white dark:ring-gray-800 box-content">
+                    <Navigation size={20} />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-gray-400 uppercase">To (Delivery)</p>
+                    <p className="text-lg font-semibold text-gray-900 dark:text-white">{trackingInfo.deliveryAddress}</p>
                   </div>
                 </div>
               </div>
 
+              {/* Agent Info */}
               {trackingInfo.assignedAgent && (
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-                    Agent Information
-                  </h3>
-                  <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg space-y-3 text-sm">
-                    <div className="flex items-start gap-3">
-                      <span className="mt-1 text-lg">👤</span>
-                      <div>
-                        <span className="text-gray-500 dark:text-gray-400 block">Agent Name</span>
-                        <span className="font-medium text-gray-800 dark:text-gray-200">
-                          {trackingInfo.assignedAgent.customerName}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <span className="mt-1 text-lg">📞</span>
-                      <div>
-                        <span className="text-gray-500 dark:text-gray-400 block">Contact</span>
-                        <span className="font-medium text-gray-800 dark:text-gray-200">
-                          {trackingInfo.assignedAgent.phone}
-                        </span>
-                      </div>
+                <div className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-2xl border border-gray-100 dark:border-gray-700">
+                  <div className="w-12 h-12 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center text-gray-500">
+                    <User size={24} />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-gray-400 uppercase">Delivery Agent</p>
+                    <p className="font-bold text-gray-900 dark:text-white">{trackingInfo.assignedAgent.customerName}</p>
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <Phone size={14} /> {trackingInfo.assignedAgent.phone}
                     </div>
                   </div>
+                  <button className="ml-auto px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-bold rounded-lg hover:opacity-90">
+                    Call
+                  </button>
                 </div>
               )}
             </div>
-
-            {/* --- Right Column: Map --- */}
-            <div>
-              <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
-                {liveLocation ? 'Live Location' : 'Last Known Location'}
-              </h3>
-              <div className="rounded-lg overflow-hidden shadow-md"> 
-                <LeafletMap
-                  currentPosition={liveLocation}
-                  popupInfo={{
-                    status: trackingInfo.status,
-                    agent: trackingInfo.assignedAgent,
-                  }}
-                  
-                />
-              </div>
-            </div>
           </div>
-        </div>
+
+          {/* Map Column */}
+          <div className="lg:col-span-1 h-[500px] lg:h-auto rounded-3xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700 relative">
+            <div className="absolute top-4 left-4 z-[400] bg-white/90 dark:bg-gray-900/90 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-2">
+              <div className={`w-2 h-2 rounded-full ${liveLocation ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
+              {liveLocation ? 'Live Updates' : 'Last Known Location'}
+            </div>
+            <LeafletMap
+              currentPosition={liveLocation}
+              popupInfo={{
+                status: trackingInfo.status,
+                agent: trackingInfo.assignedAgent,
+              }}
+            />
+          </div>
+
+        </motion.div>
       )}
     </div>
   );

@@ -1,6 +1,6 @@
 // src/tests/TestPage.test.tsx
 import { render, screen, waitFor } from '@testing-library/react';
-import TestPage from '@/app/test/page';
+import TestPage from '@/app/(public)/test/page';
 import axios from 'axios';
 import ReduxProvider from '@/components/ReduxProvider';
 

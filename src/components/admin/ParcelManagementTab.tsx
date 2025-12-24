@@ -9,9 +9,8 @@ import { fetchParcels, assignAgentToParcel } from '@/lib/parcelSlice';
 import { fetchAllUsers } from '@/lib/adminSlice';
 import ParcelDetailsModal from '../dashboard/ParcelDetailsModal';
 import { Parcel } from '@/types';
-import ExportButton from './ExportButton'; 
+import ExportButton from './ExportButton';
 import { MoreVertical, FileText, Eye } from 'lucide-react';
-import Link from 'next/link';
 import InvoiceModal from '../dashboard/InvoiceModal';
 
 // --- Skeleton Component for Loading State ---
@@ -34,7 +33,7 @@ export default function ParcelManagementTab() {
   const { parcels, loading: parcelsLoading } = useSelector((state: RootState) => state.parcels);
   const { users, loading: usersLoading } = useSelector((state: RootState) => state.admin);
   const { user } = useSelector((state: RootState) => state.auth);
-  
+
   const [selectedParcel, setSelectedParcel] = useState<Parcel | null>(null);
   // --- FIX #1: Re-introduce the state for the invoice modal ---
   const [invoiceParcel, setInvoiceParcel] = useState<Parcel | null>(null);
@@ -116,7 +115,7 @@ export default function ParcelManagementTab() {
                   <p className="font-semibold text-lg text-gray-800 dark:text-white truncate pr-2">
                     To: {parcel.receiverName}
                   </p>
-                  
+
                   <div className="relative" ref={openMenuId === parcel._id ? menuRef : null}>
                     <button
                       onClick={() => setOpenMenuId(openMenuId === parcel._id ? null : parcel._id)}

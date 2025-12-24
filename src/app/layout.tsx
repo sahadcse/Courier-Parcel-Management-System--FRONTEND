@@ -1,33 +1,45 @@
 // src/app/layout.tsx
 import './globals.css';
 import 'leaflet/dist/leaflet.css';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import ClientThemeProvider from '@/components/ClientThemeProvider';
 import ReduxProvider from '@/components/ReduxProvider';
 import I18nProvider from '@/components/I18nProvider';
 import { ToastContainer } from '@/components/common/Toast';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
-  title: 'Courier & Parcel Management System',
-  description: 'Track and manage parcels with real-time updates',
+  title: {
+    template: '%s | ProCourier',
+    default: 'ProCourier - Global Logistics & Delivery Services',
+  },
+  description: 'Experience world-class courier services with real-time tracking, secure delivery, and global reach. Fast, reliable, and efficient.',
+  keywords: ['courier', 'delivery', 'logistics', 'tracking', 'shipping', 'parcel'],
+};
+
+export const viewport: Viewport = {
+  themeColor: '#3b82f6', // Primary color
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning={true}>
-      <body className={inter.className}>
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
+      <body className="min-h-screen bg-slate-50 font-sans antialiased selection:bg-primary-500 selection:text-white">
         <I18nProvider>
-        {/* ReduxProvider creates the client-side boundary for Redux store */}
-        <ReduxProvider>
-          {/* ClientThemeProvider needs to be within the ReduxProvider to access the store state */}
+          <ReduxProvider>
             <ClientThemeProvider>
-              {children} {/* Your page content will be rendered here */}
-              <ToastContainer /> {/* Toast notifications container */}
+              {children}
+              <ToastContainer />
             </ClientThemeProvider>
-        </ReduxProvider>
+          </ReduxProvider>
         </I18nProvider>
       </body>
     </html>

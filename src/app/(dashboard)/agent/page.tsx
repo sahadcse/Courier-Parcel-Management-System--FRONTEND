@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/lib/store';
 import { fetchParcels, updateParcelStatus } from '@/lib/parcelSlice';
 import { Parcel } from '@/types';
+import { motion } from 'framer-motion';
 
 import ActionHeader from '@/components/agent/parcelList/ActionHeader';
 import PermissionAlerts from '@/components/agent/parcelList/PermissionAlerts';
@@ -13,6 +14,7 @@ import OngoingDeliveriesList from '@/components/agent/parcelList/OngoingDeliveri
 import ParcelDetailsModal from '@/components/dashboard/ParcelDetailsModal';
 import InvoiceModal from '@/components/dashboard/InvoiceModal';
 import { useClientTranslation } from '@/hooks/useClientTranslation';
+import { RefreshCw } from 'lucide-react';
 
 export default function AgentActivePage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -39,7 +41,7 @@ export default function AgentActivePage() {
       alert('Invalid QR code scanned.');
       return;
     }
-    
+
     const parcelToUpdate = [...pendingPickups, ...ongoingDeliveries].find(p => p.parcelId === parcelId);
     if (parcelToUpdate) {
       const nextStatus = parcelToUpdate.status === 'Assigned' ? 'Picked Up' : 'Delivered';
@@ -49,35 +51,76 @@ export default function AgentActivePage() {
       alert('Scanned parcel not found in your assigned list.');
     }
   };
-  
+
   if (loading === 'pending') {
     return (
-      <div className="flex justify-center items-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
-        <span className="ml-2">{t('loading_assigned_parcels')}</span>
+      <div className="flex justify-center items-center h-[50vh]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+          <span className="text-gray-500 font-medium">{t('loading_assigned_parcels')}</span>
+        </div>
       </div>
     );
   }
 
   return (
     <>
-      <div className="space-y-6">
-        <ActionHeader 
-          pendingCount={pendingPickups.length} 
-          ongoingCount={ongoingDeliveries.length}
-          onScanSuccess={handleScanSuccess}
-        />
+      <motion.div
+        className="space-y-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        {/* Top Actions Section */}
+        <section className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+          <ActionHeader
+            pendingCount={pendingPickups.length}
+            ongoingCount={ongoingDeliveries.length}
+            onScanSuccess={handleScanSuccess}
+          />
+        </section>
+
+        {/* Alerts Section */}
         <PermissionAlerts ongoingDeliveries={ongoingDeliveries} />
-        <PendingPickupsList
-          parcels={pendingPickups}
-          onViewDetails={setSelectedParcel}
-          onViewInvoice={setInvoiceParcel}
-        />
-        <OngoingDeliveriesList
-          parcels={ongoingDeliveries}
-          onViewDetails={setSelectedParcel}
-        />
-      </div>
+
+        {/* Support Grid Layout for Lists */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Section 1: Pending Pickups */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+                <span className="w-2 h-8 bg-amber-500 rounded-full"></span>
+                Pending Pickups
+              </h2>
+              <span className="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">
+                {pendingPickups.length}
+              </span>
+            </div>
+            <PendingPickupsList
+              parcels={pendingPickups}
+              onViewDetails={setSelectedParcel}
+              onViewInvoice={setInvoiceParcel}
+            />
+          </div>
+
+          {/* Section 2: Ongoing Deliveries */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+                <span className="w-2 h-8 bg-blue-500 rounded-full"></span>
+                Ongoing Deliveries
+              </h2>
+              <span className="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full">
+                {ongoingDeliveries.length}
+              </span>
+            </div>
+            <OngoingDeliveriesList
+              parcels={ongoingDeliveries}
+              onViewDetails={setSelectedParcel}
+            />
+          </div>
+        </div>
+      </motion.div>
 
       {/* Modals are rendered here, controlled by the page's state */}
       {selectedParcel && <ParcelDetailsModal parcel={selectedParcel} onClose={() => setSelectedParcel(null)} />}

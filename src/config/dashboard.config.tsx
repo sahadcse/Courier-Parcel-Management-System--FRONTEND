@@ -1,7 +1,7 @@
 // src/config/dashboard.config.tsx
 // Implement folder based routing for dashboard tabs
 
-import { ShieldCheck, MapPinned, History, User, LineChart, Package, UserPlus, BookMarked, Search } from 'lucide-react';
+import { ShieldCheck, MapPinned, History, User, LineChart, Package, UserPlus, BookMarked, Search, Mail } from 'lucide-react';
 
 // The generic Tab type is now simplified
 export interface NavTab {
@@ -20,6 +20,7 @@ export const DASHBOARD_TABS: {
   admin: [
     { id: 'reports', label: 'Reports', href: '/admin', icon: <LineChart size={20} /> },
     { id: 'parcels', label: 'Parcels', href: '/admin/parcels', icon: <Package size={20} /> },
+    { id: 'messages', label: 'Messages', href: '/admin/messages', icon: <Mail size={20} /> },
     { id: 'live_monitor', label: 'Live Monitor', href: '/admin/live_monitor', icon: <MapPinned size={20} /> },
     { id: 'users', label: 'Users', href: '/admin/users', icon: <User size={20} /> },
     { id: 'register_admin', label: 'New Admin', href: '/admin/register_admin', icon: <UserPlus size={20} /> },

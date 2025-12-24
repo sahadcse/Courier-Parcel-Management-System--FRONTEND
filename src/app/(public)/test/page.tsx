@@ -23,11 +23,11 @@ export default function TestPage() {
     const fetchHealth = async () => {
       try {
         const response = await axios.get<HealthResponse>(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/health/check`,
+          `${process.env.NEXT_PUBLIC_API_URL}/health/check`,
         );
         setHealth(response.data);
         setError(null);
-      } catch (_err) {
+      } catch {
         setError('Failed to fetch health status');
         setHealth(null);
       }

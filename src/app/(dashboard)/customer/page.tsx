@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import ParcelHistory from '@/components/dashboard/ParcelHistory';
+import { motion } from 'framer-motion';
 
 export default function HistoryPage() {
   const router = useRouter();
@@ -12,5 +13,13 @@ export default function HistoryPage() {
     router.push(`/customer/track?id=${parcelId}`);
   };
 
-  return <ParcelHistory onTrackClick={handleTrackRequest} />;
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      <ParcelHistory onTrackClick={handleTrackRequest} />
+    </motion.div>
+  );
 }

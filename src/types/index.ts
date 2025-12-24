@@ -48,7 +48,7 @@ export interface AgentInfo {
   _id: string;
   customerName: string;
   phone: string;
-  
+
 }
 
 // Based on #/components/schemas/TrackingPoint
@@ -84,7 +84,12 @@ export interface Parcel {
   sender: string; // This will be the user's ID string
   assignedAgent?: string; // Optional agent ID string
   pickupAddress: string;
-  deliveryAddress: string;
+  pickupExactLocation?: string; // Made optional
+  pickupCoordinates?: {
+    type: 'Point';
+    coordinates: [number, number];
+  };
+  deliveryAddress?: string; // Made optional
   receiverName: string;
   receiverNumber: string;
   parcelType: string;
@@ -124,7 +129,16 @@ export interface AnalyticsData {
 // This type matches the data from your booking form
 export interface ParcelCreateInput {
   pickupAddress: string;
-  deliveryAddress: string;
+  pickupExactLocation?: string;
+  pickupCoordinates?: {
+    lat: number;
+    lng: number;
+  };
+  deliveryAddress?: string;
+  deliveryCoordinates?: {
+    lat: number;
+    lng: number;
+  };
   receiverName: string;
   receiverNumber: string;
   parcelType: string;
