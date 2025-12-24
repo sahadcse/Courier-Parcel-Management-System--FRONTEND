@@ -46,11 +46,10 @@ export default function InvoiceModal({ parcel, onClose, userRole }: InvoiceModal
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`w-full rounded-t-xl bg-white p-6 shadow-2xl transition-all duration-300 dark:bg-gray-800 sm:max-w-md sm:rounded-xl ${
-          isAnimating
+        className={`w-full rounded-t-xl bg-white p-6 shadow-2xl transition-all duration-300 dark:bg-gray-800 sm:max-w-md sm:rounded-xl ${isAnimating
             ? 'translate-y-0 opacity-100 sm:scale-100'
             : 'translate-y-full opacity-0 sm:translate-y-0 sm:scale-95'
-        }`}
+          }`}
       >
         <header className="flex items-center justify-between ">
           <div>
@@ -90,10 +89,10 @@ export default function InvoiceModal({ parcel, onClose, userRole }: InvoiceModal
         </div>
 
         <footer className="flex flex-col gap-2 sm:flex-row mb-12 sm:mb-0 sm:gap-4">
-          
+
           {userRole && (
             <Link
-              href={fullInvoiceLink}
+              href={fullInvoiceLink as any}
               target="_blank"
               className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white bg-black hover:bg-primary-700"
             >

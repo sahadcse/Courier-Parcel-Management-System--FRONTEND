@@ -145,7 +145,7 @@ export default function Header() {
               return (
                 <li key={link.label}>
                   <Link
-                    href={href}
+                    href={href as any}
                     onClick={(e) => isHome ? handleScrollTo(e as any, link.href) : null}
                     className={`relative px-4 py-2 text-sm font-medium transition-colors rounded-full duration-300 ${isActive
                       ? 'text-white bg-primary-600 shadow-md shadow-primary-900/20'
@@ -233,7 +233,7 @@ export default function Header() {
                     transition={{ delay: index * 0.1 }}
                   >
                     <Link
-                      href={href}
+                      href={href as any}
                       onClick={(e) => {
                         if (isHome) {
                           handleScrollTo(e as any, link.href);

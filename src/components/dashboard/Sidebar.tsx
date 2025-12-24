@@ -75,7 +75,7 @@ export default function Sidebar({ tabs }: SidebarProps) {
                     return (
                         <Link
                             key={tab.id}
-                            href={tab.href}
+                            href={tab.href as any}
                             className={`relative flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group
                 ${isActive
                                     ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 shadow-sm'

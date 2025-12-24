@@ -18,7 +18,7 @@
     "isolatedModules": true,
     "baseUrl": ".",
     "incremental": true,
-    "jsx": "preserve", // Enable JSX for React
+    "jsx": "react-jsx", // Enable JSX for React
     "jsxImportSource": "react", // Specify React as JSX source
     "plugins": [
       {
@@ -36,7 +36,8 @@
     "**/*.ts",
     "**/*.tsx",
     "src/**/*",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

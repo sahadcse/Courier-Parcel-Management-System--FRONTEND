@@ -54,7 +54,7 @@ export default function BottomNavigation({ tabs }: BottomNavigationProps) {
                 {hiddenTabs.map((tab) => (
                   <Link
                     key={tab.id}
-                    href={tab.href}
+                    href={tab.href as any}
                     onClick={() => setIsMoreMenuOpen(false)}
                     className={`flex items-center gap-3 p-3 rounded-xl text-sm font-medium transition-colors
                       ${pathname === tab.href
@@ -82,7 +82,7 @@ export default function BottomNavigation({ tabs }: BottomNavigationProps) {
             return (
               <Link
                 key={tab.id}
-                href={tab.href}
+                href={tab.href as any}
                 className="relative flex flex-1 flex-col items-center justify-center h-full"
               >
                 {isActive && (
